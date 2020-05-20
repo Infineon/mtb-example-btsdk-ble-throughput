@@ -1,14 +1,12 @@
 /******************************************************************************
 * File Name:   tput_server_ble.c
 *
-* Version:     1.0.0
-*
 * Description: This file has implementation for functions which do the following:
-*              BLE initialization(registering gatt db, gatt callback, setting
-*              adv data etc..)
-*              BLE stack event handler - to process the BLE events.
-*              1 second timer init and callback - for throughput calculation.
-*              1 msec timer init and callback - for sending BLE notifications.
+*              * BLE initialization(registering gatt db, gatt callback, setting
+*                adv data etc..)
+*              * BLE stack event handler - to process the BLE events.
+*              * 1 second timer init and callback - for throughput calculation.
+*              * 1 msec timer init and callback - for sending BLE notifications.
 *
 * Related Document: See README.md
 *
@@ -58,41 +56,48 @@
 #include "wiced_gki.h"
 #include "tput_server_ble.h"
 
-/**************************************************************************************
+/*******************************************************************************
  *                                Variable Definitions
- *************************************************************************************/
+ ******************************************************************************/
+
 /* Variables to hold GATT notification bytes sent and GATT Write bytes received
  * successfully*/
-uint32_t             gatt_notif_tx_packets  = 0;
-uint32_t             gatt_write_rx_packets  = 0;
+static uint32_t             gatt_notif_tx_packets  = 0;
+static uint32_t             gatt_write_rx_packets  = 0;
 /* No of bytes rejected for transfer */
-uint32_t             failed_to_send         = 0;
-/* application seconds timer */
-wiced_timer_t        tput_app_sec_timer;
-/* application milliseconds timer */
-wiced_timer_t        tput_app_msec_timer;
-/* variable to store peer device details after connection */
-tput_conn_state_t    tput_conn_state;
+static uint32_t             failed_to_send         = 0;
+/* Application seconds timer */
+static wiced_timer_t        tput_app_sec_timer;
+/* Application milliseconds timer */
+static wiced_timer_t        tput_app_msec_timer;
+/* Variable to store peer device details after connection */
+static tput_conn_state_t    tput_conn_state;
+/* Variable to store attribute MTU that is exchanged after connection */
+static uint16_t             att_mtu_size           = 247;
+/* Variable to store packet size decided based on MTU exchanged */
+static uint16_t             packet_size            = 0;
 
-/*********************************************************************************************
+/*******************************************************************************
  *                                Function Definitions
- *********************************************************************************************/
-/**********************************************************************************************
-* Function Name: wiced_result_t tput_management_callback(wiced_bt_management_evt_t event,
-*                                           wiced_bt_management_evt_data_t *p_event_data)
-***********************************************************************************************
+ ******************************************************************************/
+
+/*******************************************************************************
+* Function Name: tput_management_callback()
+********************************************************************************
 * Summary:
 *   This is a Bluetooth management event handler function to receive events from
 *   BLE stack and process as needed by the application.
 *
 * Parameters:
-*   wiced_bt_management_evt_t event             : BLE event code of one byte length
-*   wiced_bt_management_evt_data_t *p_event_data: Pointer to BLE management event structures
+*   wiced_bt_management_evt_t event             : BLE event code of one byte
+*                                                 length
+*   wiced_bt_management_evt_data_t *p_event_data: Pointer to BLE management
+*                                                 event structures
 *
 * Return:
 *  wiced_result_t: Error code from WICED_RESULT_LIST or BT_RESULT_LIST
 *
-***********************************************************************************************/
+*******************************************************************************/
 wiced_result_t tput_management_callback(wiced_bt_management_evt_t event,
                                         wiced_bt_management_evt_data_t *p_event_data)
 {
@@ -100,7 +105,7 @@ wiced_result_t tput_management_callback(wiced_bt_management_evt_t event,
     uint16_t conn_interval = 0;
 
 #ifdef VERBOSE_THROUGHPUT_OUTPUT
-    WICED_BT_TRACE("\r[%s] Received %s event from stack \n", __func__, getStackEventStr(event));
+    WICED_BT_TRACE("\rThroughput GATT server management callback event: %d\n", event);
 #endif
 
     switch (event)
@@ -171,7 +176,6 @@ wiced_result_t tput_management_callback(wiced_bt_management_evt_t event,
             }
             else
             {
-
 #ifdef VERBOSE_THROUGHPUT_OUTPUT
                 WICED_BT_TRACE("\rConnection parameters update failed\n");
 #endif
@@ -180,8 +184,7 @@ wiced_result_t tput_management_callback(wiced_bt_management_evt_t event,
 
         default:
 #ifdef VERBOSE_THROUGHPUT_OUTPUT
-            WICED_BT_TRACE("\r[%s] received event (%s) not processed \n",
-                                       __func__,getStackEventStr(event));
+            WICED_BT_TRACE("\rUnhandled management callback event: %d\n", event);
 #endif
             break;
     }
@@ -189,9 +192,9 @@ wiced_result_t tput_management_callback(wiced_bt_management_evt_t event,
     return (result);
 }
 
-/*********************************************************************
-* Function Name: void tput_init(void)
-**********************************************************************
+/*******************************************************************************
+* Function Name: tput_init()
+********************************************************************************
 * Summary:
 *   This function initializes/registers the interrupt(s), timer(s),
 *   GATT database as needed by the application.
@@ -202,10 +205,10 @@ wiced_result_t tput_management_callback(wiced_bt_management_evt_t event,
 * Return:
 *   None
 *
-**********************************************************************/
+*******************************************************************************/
 void tput_init(void)
 {
-    wiced_bt_gatt_status_t gatt_status;
+    wiced_bt_gatt_status_t gatt_status = WICED_BT_GATT_ERROR;
 
     /* Register with stack to receive GATT callback */
     gatt_status = wiced_bt_gatt_register(tput_gatts_callback);
@@ -252,9 +255,9 @@ void tput_init(void)
     }
 }
 
-/*********************************************************************
-* Function Name: void tput_set_advertisement_data(void)
-**********************************************************************
+/*******************************************************************************
+* Function Name: tput_set_advertisement_data()
+********************************************************************************
 * Summary:
 *   Setup advertisement data with the device name and throughput
 *   service uuid.
@@ -265,13 +268,13 @@ void tput_init(void)
 * Return:
 *   None
 *
-**********************************************************************/
+*******************************************************************************/
 void tput_set_advertisement_data(void)
 {
-    wiced_bt_ble_advert_elem_t adv_elem[ADV_ELEM_LEN];
+    wiced_bt_ble_advert_elem_t adv_elem[ADV_ELEM_LEN] = {0};
     uint8_t num_elem = 0;
     uint8_t flag = BTM_BLE_GENERAL_DISCOVERABLE_FLAG | BTM_BLE_BREDR_NOT_SUPPORTED;
-    uint8_t tput_service_uuid[LEN_UUID_128] = {HDLS_THROUGHPUT_MEASUREMENT};
+    uint8_t tput_service_uuid[LEN_UUID_128] = {__UUID_SERVICE_THROUGHPUT_MEASUREMENT};
 
     adv_elem[num_elem].advert_type  = BTM_BLE_ADVERT_TYPE_FLAG;
     adv_elem[num_elem].len          = sizeof(uint8_t);
@@ -295,54 +298,9 @@ void tput_set_advertisement_data(void)
     }
 }
 
-/*********************************************************************
-* Function Name: static void tput_send_notification(void)
-**********************************************************************
-* Summary:
-*   Send GATT notification every millisecond.
-*
-* Parameters:
-*   None
-*
-* Return:
-*   None
-*
-**********************************************************************/
-static void tput_send_notification(void)
-{
-    wiced_bt_gatt_status_t status = WICED_BT_GATT_SUCCESS;
-    uint32_t buf_left = 0;
-
-    buf_left = wiced_bt_ble_get_available_tx_buffers();
-    if (buf_left > MINIMUM_TX_BUFFER_LEN)
-    {
-        status = wiced_bt_gatt_send_notification(tput_conn_state.conn_id,
-                                HDLC_THROUGHPUT_MEASUREMENT_NOTIFY_VALUE,
-                                   app_throughput_measurement_notify_len,
-                                      app_throughput_measurement_notify);
-        if (status == WICED_BT_GATT_SUCCESS)
-        {
-            gatt_notif_tx_packets += app_throughput_measurement_notify_len;
-            /* LED 2 ON */
-            wiced_hal_gpio_set_pin_output(CONGESTION_LED, GPIO_PIN_OUTPUT_LOW);
-        }
-        else
-        {
-            /* LED 2 OFF since TX failed */
-            wiced_hal_gpio_set_pin_output(CONGESTION_LED, GPIO_PIN_OUTPUT_HIGH);
-        }
-    }
-    else
-    {
-        failed_to_send++;
-        /* LED 2 OFF since TX failed */
-        wiced_hal_gpio_set_pin_output(CONGESTION_LED, GPIO_PIN_OUTPUT_HIGH);
-    }
-}
-
-/****************************************************************************
-* Function Name: void tput_app_sec_timeout(uint32_t unused)
-*****************************************************************************
+/*******************************************************************************
+* Function Name: tput_app_sec_timeout()
+********************************************************************************
 * Summary:
 *   One second timer callback.
 *   Print the TX and RX data throughput over PUART console.
@@ -354,7 +312,7 @@ static void tput_send_notification(void)
 * Return:
 *   None
 *
-****************************************************************************/
+*******************************************************************************/
 void tput_app_sec_timeout(uint32_t unused)
 {
     /* Calculate TX and RX throughput
@@ -371,7 +329,8 @@ void tput_app_sec_timeout(uint32_t unused)
         WICED_BT_TRACE("\rGATT NOTIFICATION : Server Throughput (TX)= %d kbps\n",
                           gatt_notif_tx_packets);
 #ifdef VERBOSE_THROUGHPUT_OUTPUT
-        WICED_BT_TRACE("\rNumber of GATT notification packets failed to send = %d\n", failed_to_send);
+        WICED_BT_TRACE("\rNumber of GATT notification packets failed to send = %d\n"
+                       , failed_to_send);
 #endif
         /* Reset the GATT notification byte counter */
         gatt_notif_tx_packets = 0;
@@ -391,9 +350,9 @@ void tput_app_sec_timeout(uint32_t unused)
     }
 }
 
-/****************************************************************************
-* Function Name: void tput_app_msec_timeout(uint32_t unused)
-*****************************************************************************
+/*******************************************************************************
+* Function Name: tput_app_msec_timeout()
+********************************************************************************
 * Summary:
 *   One millisecond timer callback.
 *   Send GATT notifications if enabled by the GATT Client.
@@ -405,21 +364,22 @@ void tput_app_sec_timeout(uint32_t unused)
 * Return:
 *   None
 *
-****************************************************************************/
+*******************************************************************************/
 void tput_app_msec_timeout(uint32_t unused)
 {
     /* Send GATT Notification */
     if (app_throughput_measurement_notify_descriptor[0])
     {
-        /* sending GATT notification. */
+        /* Sending GATT notification. */
         tput_send_notification();
     }
 }
 
 /*******************************************************************************
-* Function Name: void tput_gatts_connection_up(void)
+* Function Name: tput_send_notification()
 ********************************************************************************
-* Summary: This function is invoked when GATT connection is established
+* Summary:
+*   Send GATT notification every millisecond.
 *
 * Parameters:
 *   None
@@ -428,8 +388,123 @@ void tput_app_msec_timeout(uint32_t unused)
 *   None
 *
 *******************************************************************************/
-void tput_gatts_connection_up(void)
+static void tput_send_notification(void)
 {
+    wiced_bt_gatt_status_t status = WICED_BT_GATT_SUCCESS;
+    uint32_t buf_left = 0;
+
+    buf_left = wiced_bt_ble_get_available_tx_buffers();
+    if (buf_left > MINIMUM_TX_BUFFER_LEN)
+    {
+        status = wiced_bt_gatt_send_notification(tput_conn_state.conn_id,
+                                HDLC_THROUGHPUT_MEASUREMENT_NOTIFY_VALUE,
+                                                             packet_size,
+                                      app_throughput_measurement_notify);
+        if (status == WICED_BT_GATT_SUCCESS)
+        {
+            gatt_notif_tx_packets += packet_size;
+            /* LED 2 ON */
+            wiced_hal_gpio_set_pin_output(CONGESTION_LED, GPIO_PIN_OUTPUT_LOW);
+        }
+        else
+        {
+            failed_to_send++;
+            /* LED 2 OFF since TX failed */
+            wiced_hal_gpio_set_pin_output(CONGESTION_LED, GPIO_PIN_OUTPUT_HIGH);
+        }
+    }
+    else
+    {
+        failed_to_send++;
+        /* LED 2 OFF since TX failed */
+        wiced_hal_gpio_set_pin_output(CONGESTION_LED, GPIO_PIN_OUTPUT_HIGH);
+    }
+}
+
+/*******************************************************************************
+ * Function Name: tput_gatts_callback()
+ *******************************************************************************
+ * Summary: Callback for various GATT events.
+ *
+ * Parameters:
+ *   wiced_bt_gatt_evt_t event          : GATT event code.
+ *   wiced_bt_gatt_event_data_t *p_data : GATT event information handle.
+ *
+ * Return:
+ *   wiced_bt_gatt_status_t: Error code from WICED_RESULT_LIST or BT_RESULT_LIST
+ *
+ ******************************************************************************/
+wiced_bt_gatt_status_t
+tput_gatts_callback(wiced_bt_gatt_evt_t event, wiced_bt_gatt_event_data_t *p_data)
+{
+    wiced_bt_gatt_status_t result = WICED_BT_GATT_SUCCESS;
+
+    switch(event)
+    {
+        case GATT_CONNECTION_STATUS_EVT:
+            tput_gatts_conn_status_cb(&p_data->connection_status);
+            break;
+        case GATT_ATTRIBUTE_REQUEST_EVT:
+            result = tput_gatts_req_cb(&p_data->attribute_request);
+            break;
+        default:
+#ifdef VERBOSE_THROUGHPUT_OUTPUT
+            WICED_BT_TRACE("\rtput_gatts_callback: Event %d unhandled\n", event);
+#endif
+            break;
+    }
+    return result;
+}
+
+/*******************************************************************************
+* Function Name: tput_gatts_conn_status_cb()
+********************************************************************************
+* Summary: This function is invoked on GATT connection status change
+*
+* Parameters:
+*   wiced_bt_gatt_connection_status_t *p_status: GATT connection status handle
+*
+* Return:
+*   None
+*
+*******************************************************************************/
+void tput_gatts_conn_status_cb(wiced_bt_gatt_connection_status_t *p_status)
+{
+    if (p_status->connected)
+    {
+        tput_gatts_connection_up(p_status);
+    }
+    else
+    {
+        tput_gatts_connection_down();
+    }
+}
+
+/*******************************************************************************
+* Function Name: tput_gatts_connection_up()
+********************************************************************************
+* Summary: This function is invoked when GATT connection is established
+*
+* Parameters:
+*   wiced_bt_gatt_connection_status_t *p_status: GATT connection status handle
+*
+* Return:
+*   None
+*
+*******************************************************************************/
+void tput_gatts_connection_up(wiced_bt_gatt_connection_status_t *p_status)
+{
+    WICED_BT_TRACE("\rGATT connected\n");
+
+    /* Update the connection handler */
+    tput_conn_state.conn_id = p_status->conn_id;
+
+    /* Save BD address of the connected device */
+    memcpy(tput_conn_state.remote_addr, p_status->bd_addr, sizeof(BD_ADDR));
+
+    /* GATT Connected - LED1 ON */
+    wiced_hal_gpio_set_pin_output(GATT_CONNECT_LED, GPIO_PIN_OUTPUT_LOW);
+
     /* Stop advertising */
     if(wiced_bt_start_advertisements(BTM_BLE_ADVERT_OFF, BLE_ADDR_PUBLIC, NULL)
                                                            != WICED_BT_SUCCESS)
@@ -461,9 +536,9 @@ void tput_gatts_connection_up(void)
     }
 }
 
-/**************************************************************************************
-* Function Name: void tput_gatts_connection_down(void)
-***************************************************************************************
+/*******************************************************************************
+* Function Name: tput_gatts_connection_down()
+********************************************************************************
 * Summary: This function is invoked on GATT disconnect
 *
 * Parameters:
@@ -472,7 +547,7 @@ void tput_gatts_connection_up(void)
 * Return:
 *   None
 *
-**************************************************************************************/
+*******************************************************************************/
 void tput_gatts_connection_down(void)
 {
     gatt_db_lookup_table_t *puAttribute;
@@ -482,6 +557,13 @@ void tput_gatts_connection_down(void)
     tput_conn_state.conn_id = 0;
     gatt_notif_tx_packets = 0;
     gatt_write_rx_packets = 0;
+    failed_to_send = 0;
+
+    WICED_BT_TRACE("\rDisconnected from peer.\n");
+
+    /* GATT Disconnected - LED1 OFF */
+    wiced_hal_gpio_set_pin_output(GATT_CONNECT_LED, GPIO_PIN_OUTPUT_HIGH);
+    wiced_hal_gpio_set_pin_output(CONGESTION_LED , GPIO_PIN_OUTPUT_HIGH);
 
     /* We are disconnected now. Stop the timers */
     if (WICED_BT_SUCCESS != wiced_stop_timer(&tput_app_sec_timer))
@@ -516,48 +598,48 @@ void tput_gatts_connection_down(void)
     }
 }
 
-/*************************************************************************************
-* Function Name: void
-*                tput_gatts_conn_status_cb(wiced_bt_gatt_connection_status_t *p_status)
-**************************************************************************************
-* Summary: This function is invoked on GATT connection status change
-*
-* Parameters:
-*   wiced_bt_gatt_connection_status_t *p_status: GATT connection status handle
-*
-* Return:
-*   None
-*
-*************************************************************************************/
-void tput_gatts_conn_status_cb(wiced_bt_gatt_connection_status_t *p_status)
+/*******************************************************************************
+ * Function Name: tput_gatts_req_cb()
+ *******************************************************************************
+ * Summary: Process GATT Read/Write/MTU request from the peer.
+ *
+ * Parameters:
+ *   wiced_bt_gatt_attribute_request_t *p_data: GATT request information handle.
+ *
+ * Return:
+ *   wiced_bt_gatt_status_t: Error code from WICED_RESULT_LIST or BT_RESULT_LIST
+ *
+ ******************************************************************************/
+wiced_bt_gatt_status_t tput_gatts_req_cb(wiced_bt_gatt_attribute_request_t *p_data)
 {
-    if (p_status->connected)
+    wiced_bt_gatt_status_t result = WICED_BT_GATT_SUCCESS;
+
+    switch (p_data->request_type)
     {
-        WICED_BT_TRACE("\rGATT connected\n");
-        /* Update the connection handler. Save BD address of the connected device. */
-        tput_conn_state.conn_id = p_status->conn_id;
-        memcpy(tput_conn_state.remote_addr, p_status->bd_addr, sizeof(BD_ADDR));
+        case GATTS_REQ_TYPE_READ:
+            result = tput_gatts_req_read_handler(p_data->conn_id, &(p_data->data.read_req));
+            break;
 
-        /* GATT Connected - LED1 ON */
-        wiced_hal_gpio_set_pin_output(GATT_CONNECT_LED, GPIO_PIN_OUTPUT_LOW);
+        case GATTS_REQ_TYPE_WRITE:
+            result = tput_gatts_req_write_handler(p_data->conn_id, &(p_data->data.write_req));
+            break;
 
-        tput_gatts_connection_up();
+        case GATTS_REQ_TYPE_MTU:
+            WICED_BT_TRACE("\rMTU exchanged: %d\n", p_data->data.mtu);
+            att_mtu_size = p_data->data.mtu;
+            packet_size = get_notification_packet_size(att_mtu_size);
+            break;
+
+        default:
+            WICED_BT_TRACE("\rGATT request unhandled..\n");
+            break;
     }
-    else
-    {
-        WICED_BT_TRACE("\rDisconnected from peer.\n");
-        /* GATT Disconnected - LED1 OFF */
-        wiced_hal_gpio_set_pin_output(GATT_CONNECT_LED, GPIO_PIN_OUTPUT_HIGH);
-        wiced_hal_gpio_set_pin_output(CONGESTION_LED , GPIO_PIN_OUTPUT_HIGH);
-
-        tput_gatts_connection_down();
-    }
+    return result;
 }
 
-/*************************************************************************************************
-* Function Name: wiced_bt_gatt_status_t
-*                tput_gatts_req_read_handler(uint16_t conn_id, wiced_bt_gatt_read_t * p_read_data)
-**************************************************************************************************
+/*******************************************************************************
+* Function Name: tput_gatts_req_read_handler()
+********************************************************************************
 * Summary: GATT attribute read function.
 *          Process read command from peer device.
 *
@@ -566,53 +648,46 @@ void tput_gatts_conn_status_cb(wiced_bt_gatt_connection_status_t *p_status)
 *   wiced_bt_gatt_read_t * p_read_data  : GATT read attribute handle
 *
 * Return:
-*   wiced_bt_gatt_status_t: WICED_BT_GATT_SUCCESS or WICED_BT_GATT_INVALID_HANDLE
+*   wiced_bt_gatt_status_t: result for read operation
 *
-*************************************************************************************************/
+*******************************************************************************/
 wiced_bt_gatt_status_t
 tput_gatts_req_read_handler(uint16_t conn_id, wiced_bt_gatt_read_t* p_read_data)
 {
-    gatt_db_lookup_table_t *puAttribute;
-    uint16_t attr_len_to_copy;
+    gatt_db_lookup_table_t *server_attribute = NULL;
+    uint16_t attribute_length = 0;
+    uint16_t max_attribute_length = 0;
 
-    if ((puAttribute = tput_get_attribute(p_read_data->handle)) == NULL)
+    /* Get the attribute requested by client using the handle */
+    if ((server_attribute = tput_get_attribute(p_read_data->handle)) == NULL)
     {
-#ifdef VERBOSE_THROUGHPUT_OUTPUT
-        WICED_BT_TRACE("\rread_handler attr not found hdl:%x\n",
-                                        p_read_data->handle );
-#endif
+        /* If the attribute is not found, return */
+        WICED_BT_TRACE("\rAttribute handle not found for read request: %x\n",
+                                                       p_read_data->handle );
         return WICED_BT_GATT_INVALID_HANDLE;
     }
 
-    attr_len_to_copy = puAttribute->cur_len;
+    /* Copy the length of server attribute found in GATT DB */
+    attribute_length = server_attribute->cur_len;
+    /* Copy the length provided by stack */
+    max_attribute_length = *p_read_data->p_val_len;
 
-    if (p_read_data->offset >= puAttribute->cur_len)
+    /* Check if attribute(present in GATT DB) length does not exceed length
+       provided by stack */
+    if (attribute_length <= max_attribute_length)
     {
-        attr_len_to_copy = 0;
+        memcpy( p_read_data->p_val, server_attribute->p_data, attribute_length);
+        return WICED_BT_GATT_SUCCESS;
     }
-
-    if (attr_len_to_copy != 0)
+    else
     {
-        uint8_t *from;
-        uint16_t to_copy = attr_len_to_copy - p_read_data->offset;
-
-        if (to_copy > *p_read_data->p_val_len)
-        {
-            to_copy = *p_read_data->p_val_len;
-        }
-
-        from = ((uint8_t *)puAttribute->p_data) + p_read_data->offset;
-        *p_read_data->p_val_len = to_copy;
-        memcpy( p_read_data->p_val, from, to_copy);
+        return WICED_BT_GATT_INVALID_ATTR_LEN;
     }
-
-    return WICED_BT_GATT_SUCCESS;
 }
 
-/*************************************************************************************
-* Function Name: wiced_bt_gatt_status_t
-*                tput_gatts_req_write_handler(wiced_bt_gatt_connection_status_t *p_status)
-**************************************************************************************
+/*******************************************************************************
+* Function Name: tput_gatts_req_write_handler()
+********************************************************************************
 * Summary: GATT attribute write function.
 *          Process write request or write command from peer device.
 *
@@ -621,10 +696,9 @@ tput_gatts_req_read_handler(uint16_t conn_id, wiced_bt_gatt_read_t* p_read_data)
 *   wiced_bt_gatt_write_t * p_data  : GATT write attribute handle
 *
 * Return:
-*   wiced_bt_gatt_status_t: WICED_BT_GATT_SUCCESS or WICED_BT_GATT_INVALID_HANDLE or
-*                           WICED_BT_GATT_INVALID_ATTR_LEN
+*   wiced_bt_gatt_status_t: result for write operation
 *
-*************************************************************************************/
+*******************************************************************************/
 wiced_bt_gatt_status_t
 tput_gatts_req_write_handler(uint16_t conn_id, wiced_bt_gatt_write_t * p_data)
 {
@@ -694,78 +768,50 @@ tput_gatts_req_write_handler(uint16_t conn_id, wiced_bt_gatt_write_t * p_data)
     return result;
 }
 
-/*************************************************************************************
- * Function Name: wiced_bt_gatt_status_t
- *                tput_gatts_req_cb(wiced_bt_gatt_attribute_request_t *p_data)
- **************************************************************************************
- * Summary: Process GATT Read/Write/MTU request from the peer.
- *
- * Parameters:
- *   wiced_bt_gatt_attribute_request_t *p_data: GATT request information handle.
- *
- * Return:
- *   wiced_bt_gatt_status_t: Error code from WICED_RESULT_LIST or BT_RESULT_LIST
- *
- *************************************************************************************/
-wiced_bt_gatt_status_t tput_gatts_req_cb(wiced_bt_gatt_attribute_request_t *p_data)
+/*******************************************************************************
+* Function Name: get_notification_packet_size()
+********************************************************************************
+* Summary: This function decides size of notification packet based on the
+*   attribute MTU exchanged. This is done to utilize the LL payload space
+*   effectively.
+*
+* Parameters:
+*   uint16_t att_mtu_size: MTU value exchaged after connection.
+*
+* Return:
+*   uint16_t: Size of notification packet derived based on MTU.
+*
+*******************************************************************************/
+static uint16_t get_notification_packet_size( uint16_t att_mtu_size )
 {
-    wiced_bt_gatt_status_t result = WICED_BT_GATT_SUCCESS;
-
-    switch (p_data->request_type)
+    if(att_mtu_size < 247u)
     {
-    case GATTS_REQ_TYPE_READ:
-        result = tput_gatts_req_read_handler(p_data->conn_id, &(p_data->data.read_req));
-        break;
-    case GATTS_REQ_TYPE_WRITE:
-        result = tput_gatts_req_write_handler(p_data->conn_id, &(p_data->data.write_req));
-        break;
-    case GATTS_REQ_TYPE_MTU:
-        WICED_BT_TRACE("\rMTU exchanged: %d\n", p_data->data.mtu);
-        break;
-    default:
-        WICED_BT_TRACE("\rGATT request unhandled..\n");
-        break;
+       /* Packet Length = ATT_MTU_SIZE - ATT_HANDLE(2 bytes) - ATT_OPCODE(1 byte)
+        * Reason: With DLE enabled, LL payload is 251 bytes. So if an MTU less
+        * than 247 is exchanged, the data can be accommodated in a single LL
+        * packet */
+        packet_size = att_mtu_size - 3u;
     }
-    return result;
+    else if((att_mtu_size >= 247u) && (att_mtu_size < 498u))
+    {
+        /* If MTU is between 247 and 498, if a packet size other than 244 bytes
+         * is used, the data will be split and the LL payload space is not
+         * utilized effectively. Refer README for details */
+        packet_size = 244u;
+    }
+    else
+    {
+        /* For MTU value greater than 498, if a packet size other than 495(or 244)
+         * is used, the LL payload space is not utilized effectively.
+         * 495 bytes will go as two LL packets: 244 bytes + 251 bytes */
+        packet_size = 495u;
+    }
+    return packet_size;
 }
 
-/**************************************************************************************
- * Function Name: wiced_bt_gatt_status_t tput_gatts_callback(wiced_bt_gatt_evt_t event,
- *                                                  wiced_bt_gatt_event_data_t *p_data)
- **************************************************************************************
- * Summary: Callback for various GATT events.
- *
- * Parameters:
- *   wiced_bt_gatt_evt_t event          : GATT event code.
- *   wiced_bt_gatt_event_data_t *p_data : GATT event information handle.
- *
- * Return:
- *   wiced_bt_gatt_status_t: Error code from WICED_RESULT_LIST or BT_RESULT_LIST
- *
- *************************************************************************************/
-wiced_bt_gatt_status_t
-tput_gatts_callback(wiced_bt_gatt_evt_t event, wiced_bt_gatt_event_data_t *p_data)
-{
-    wiced_bt_gatt_status_t result = WICED_BT_GATT_SUCCESS;
-
-    switch(event)
-    {
-    case GATT_CONNECTION_STATUS_EVT:
-        tput_gatts_conn_status_cb(&p_data->connection_status);
-        break;
-    case GATT_ATTRIBUTE_REQUEST_EVT:
-        result = tput_gatts_req_cb(&p_data->attribute_request);
-        break;
-    default:
-        WICED_BT_TRACE("\rtput_gatts_callback: Event %d unhandled\n", event);
-        break;
-    }
-    return result;
-}
-
-/*************************************************************************************
-* Function Name: gatt_db_lookup_table_t* tput_get_attribute( uint16_t handle )
-**************************************************************************************
+/*******************************************************************************
+* Function Name: tput_get_attribute()
+********************************************************************************
 * Summary: Find attribute description by handle
 *
 * Parameters:
@@ -774,7 +820,7 @@ tput_gatts_callback(wiced_bt_gatt_evt_t event, wiced_bt_gatt_event_data_t *p_dat
 * Return:
 *   gatt_db_lookup_table_t*: Pointer to BLE GATT attribute handle
 *
-*************************************************************************************/
+*******************************************************************************/
 gatt_db_lookup_table_t* tput_get_attribute(uint16_t handle)
 {
     for (uint16_t i = 0; i < app_gatt_db_ext_attr_tbl_size; i++)
@@ -790,27 +836,6 @@ gatt_db_lookup_table_t* tput_get_attribute(uint16_t handle)
     return NULL;
 }
 
-/*************************************************************************************
-* Function Name: const char* getStackEventStr(wiced_bt_management_evt_t event)
-**************************************************************************************
-* Summary: Parse BLE management event code to string
-*
-* Parameters:
-*   wiced_bt_management_evt_t event: BLE management event code
-*
-* Return:
-*   const uint8_t*: Pointer to BLE management string mapped event code
-*
-*************************************************************************************/
-const char* getStackEventStr(wiced_bt_management_evt_t event)
-{
-    if (event >= sizeof(eventStr) / sizeof(char*))
-    {
-        return "** UNKNOWN **";
-    }
-
-    return eventStr[event];
-}
 
 
 

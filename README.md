@@ -1,61 +1,67 @@
 # CE226301- BLE Throughput Measurement
 
-This code example demonstrates the maximum BLE throughput (using GATT layer notifications and writes) that can be obtained with Cypress Bluetooth devices (CYW208xx and CYW207xx) using ModusToolbox™ IDE.
+This code example demonstrates the maximum BLE throughput (using GATT layer notifications and Write command) that can be obtained with Cypress BT SoCs (CYW208xx and CYW207xx).
 
 This code example has two applications:
-1. **BLE GATT Server Throughput Measurement**: This application sends GATT notifications and calculates the BLE TX throughput, and receives GATT Writes and calculates the BLE RX throughput.
-2. **BLE GATT Client Throughput Measurement**: This application sends GATT writes and calculates the BLE TX throughput, and receives GATT notifications and calculates the BLE RX throughput.
+
+1. **BLE GATT Server Throughput Measurement**: This application sends GATT notifications and calculates the BLE TX throughput, and receives GATT write command and calculates the BLE RX throughput.
+2. **BLE GATT Client Throughput Measurement**: This application sends GATT write command and calculates the BLE TX throughput, and receives GATT notifications and calculates the BLE RX throughput.
 
 **Note**: This code example can also be used with PSoC 6 BLE kits programmed with the [PSoC6 BLE throughput measurement code example](https://github.com/cypresssemiconductorco/mtb-example-psoc6-ble-throughput-freertos). The PSoC 6 BLE throughput measurement code example is similar to this code example. It has two apps: one for GATT Server and another for GATT Client.
 
 ## Requirements
-- **Tool**: [ModusToolbox™ IDE](https://www.cypress.com/products/modustoolbox-software-environment) v 2.x
-- **Programming Language**: C
-- **Associated Parts**: [CYW20819](https://www.cypress.com/datasheet/CYW20819), [CYW20820](https://www.cypress.com/datasheet/CYW20820), [CYW20719](https://www.cypress.com/documentation/datasheets/cyw20719-enhanced-low-power-bredrble-bluetooth-50-soc)
+
+- [ModusToolbox™ software](https://www.cypress.com/products/modustoolbox-software-environment) v2.x
+- Programming Language: C
+- Associated Parts: [CYW20819](https://www.cypress.com/datasheet/CYW20819), [CYW20820](https://www.cypress.com/datasheet/CYW20820), [CYW20719](https://www.cypress.com/documentation/datasheets/cyw20719-enhanced-low-power-bredrble-bluetooth-50-soc)
 
 ## Supported Kits
+
 - [CYW920819EVB-02 Evaluation Kit](http://www.cypress.com/CYW920819EVB-02)
 - [CYW920820EVB-02 Evaluation kit](http://www.cypress.com/CYW920820EVB-02)
 - [CYW920719B2Q40EVB-01 Evaluation kit](https://community.cypress.com/docs/DOC-17736)
 
 ## Hardware Setup
+
 This example uses the board's default configuration. Refer to the kit user guide to ensure that the board is configured correctly.
 Two boards are required to use this code example: one for BLE GATT Server throughput measurement and the other for BLE GATT Client throughput measurement.
 A combination of CYW20819, CYW20820, or CYW20719 can be used. PSoC 6 BLE kits programmed with the [PSoC6 BLE throughput measurement code example](https://github.com/cypresssemiconductorco/mtb-example-psoc6-ble-throughput-freertos) can also be used.
 
 ## Software Setup
-Install a terminal emulator if you don't have one. Instructions in this document use [Tera Term](https://ttssh2.osdn.jp/index.html.en). All other required software come bundled with the ModusToolbox IDE.
+
+Install a terminal emulator if you don't have one. Instructions in this document use [Tera Term](https://ttssh2.osdn.jp/index.html.en). All other required software come bundled with the Eclipse IDE for ModusToolbox.
 
 To use a Windows PC as the BLE Central device for the GATT Server Throughput Measurement application, install [CySmart Host Emulation Tool](https://www.cypress.com/documentation/software-and-drivers/cysmart-bluetooth-le-test-and-debug-tool). You will also need [CY5677 CySmart BLE 4.2 USB Dongle](http://www.cypress.com/documentation/development-kitsboards/cy5677-cysmart-bluetooth-low-energy-ble-42-usb-dongle).
 
 To use an iOS or Android smartphone as the BLE Central device, download the CySmart app. Scan the following QR codes from your mobile phone to download the CySmart app.
 
-![AppQR](./images/QR.PNG)
+![AppQR](images/qr.png)
 
 **NOTE**: If you are using a Windows PC or iOS/Android smartphone as BLE Central, all features of the GATT Server throughput measurement application cannot be used. Throughput can be measured only for GATT notifications. In this case, throughput rates obtained will depend on the connection parameters negotiated and the PHY of the Central device.
 
 ## Using the Code Example
 
-### In ModusToolbox IDE:
-1. Install ModusToolbox 2.x.
+### In Eclipse IDE for ModusToolbox:
 
-2. In the ModusToolbox IDE, click the **New Application** link in the Quick Panel (or, use **File > New > ModusToolbox IDE Application**).
+1. Click the **New Application** link in the Quick Panel (or, use **File** > **New** > **ModusToolbox Application**).
 
-3. Select your board (CYW920819EVB-02/ CYW920820EVB-02/ CYW920719B2Q40EVB-01) and click **Next**.
+2. Pick a kit supported by the code example from the list shown in the **Project Creator - Choose Board Support Package (BSP)** dialog and click **Next**.
 
-4. Select **wiced\_btsdk**. This project contains the SDK. It is used by all BT-SDK applications. You will need to create this project just once in the working directory (i.e., Eclipse workspace). Ignore if you have already created this project.
+3. In the **Project Creator - Select Application** dialog, select **wiced\_btsdk**. This project contains the SDK. It is used by all BT-SDK applications. You will need to create this project just once in the working directory (i.e., Eclipse workspace). Ignore if you have already created this project.
 
     **Note**: Do not change the name of this project. All BT-SDK apps use this project name in application makefiles.
 
-5. After the 'wiced\_btsdk' project is created, click the **New Application** link again, select the board, and click **Next**.
+4. After the 'wiced\_btsdk' project is created, choose **BLE_Throughput_Measurement** application from the same **Project Creator - Select Application** dialog.
 
-6. Select the **BLE_Throughput_Measurement** application and click **Next**. Click **Finish** to create the application. Two apps, *GATT_client* and *GATT_server*, are created in the workspace.
+5. Optionally, update the **Application Name** field with the application name.
 
-    **Note**: Both the applications are created for the board that you have selected in Step 3.
+6. Click **Create** to complete the application creation process.
+
+    **Note**: Both the applications are created for the board that you have selected in Step 2.
 
 7. Select the *GATT_server* application in the IDE. In the Quick Panel, click the **Build** link to build the application.
 
-8. Connect one board to your PC.
+8. Connect the first board to your PC.
 
 9. To program it (download the application), select **Program** in the Quick Panel.
 
@@ -69,27 +75,25 @@ To use an iOS or Android smartphone as the BLE Central device, download the CySm
 
 ### In Command-line Interface (CLI):
 
-1. Install ModusToolbox 2.x.
+1. In Windows, run Cygwin by clicking on the *Cygwin.bat* file from the  *<install_folder>\ModusToolbox\tools_2.x\modus-shell* folder. The default install folder is the user's home directory. All the following steps should be run from inside the Cygwin window.
 
-2. In Windows, run Cygwin by clicking on the *Cygwin.bat* file from the  *<install_folder>\ModusToolbox\tools_2.x\modus-shell* folder. The default install folder is the user's home directory. All the following steps should be run from inside the Cygwin window.
+2. Go to the directory that you want to use for your workspace. Use the `mkdir <directory>` command to create the new directory and run the `cd <directory>` command.
 
-3. Go to the directory that you want to use for your workspace. Use the `mkdir <directory>` command to create the new directory and run the `cd <directory>` command.
-
-4. Clone the *wiced\_btsdk* repo first. As mentioned earlier, this project contains the SDK used by all apps. You will need to create this project just once in the working directory. For example:
+3. Clone the *wiced\_btsdk* repo first. As mentioned earlier, this project contains the SDK used by all apps. You will need to create this project just once in the working directory. For example:
    ```
    > git clone https://github.com/cypresssemiconductorco/wiced_btsdk
    ```
-5. Clone the app repo *mtb-example-btsdk-ble-throughput*. The application repo directory should be at the same folder level as *wiced_btsdk*. For example:
+4. Clone the app repo *mtb-example-btsdk-ble-throughput*. The application repo directory should be at the same folder level as *wiced_btsdk*. For example:
    ```
    > git clone https://github.com/cypresssemiconductorco/mtb-example-btsdk-ble-throughput
    ```
 
-6. The *wiced_btsdk* repo contains references to other repos. To download all the required collateral, navigate to the *wiced_btsdk* folder and use the `make getlibs` command. For example:
+5. The *wiced_btsdk* repo contains references to other repos. To download all the required collateral, navigate to the *wiced_btsdk* folder and use the `make getlibs` command. For example:
    ```
    > cd wiced_btsdk
    > make getlibs
    ```
-7. Navigate into the *GATT_server* application folder from the *wiced_btsdk* folder. To build the application using the default target (CYW920819EVB-02), run the `make build` command:
+6. Navigate into the *GATT_server* application folder from the *wiced_btsdk* folder. To build the application using the default target (CYW920819EVB-02), run the `make build` command:
    ```
    > cd ../mtb-example-btsdk-ble-throughput/GATT_server
    > make build
@@ -104,9 +108,9 @@ To use an iOS or Android smartphone as the BLE Central device, download the CySm
     > cd ../mtb-example-btsdk-ble-throughput/GATT_server
     > make build TARGET=CYW920820EVB-02
     ```
-8. Connect the first board to your PC.
+7. Connect the first board to your PC.
 
-9. To program (download the application) the board, run the `make qprogram` (for default target - CYW920819EVB-02)
+8. To program (download the application) the board, run the `make qprogram` (for default target - CYW920819EVB-02)
    ```
    > make qprogram
    ```
@@ -122,33 +126,48 @@ To use an iOS or Android smartphone as the BLE Central device, download the CySm
     ```
    **Note**: If the download fails, it is possible that a previously loaded application is preventing programming. For example,the application may use a custom baud rate that the download process does not detect or the device may be in low-power   mode. In that case, it may be necessary to put the board in recovery mode, and then try the programming operation again from the IDE. To enter recovery mode, first, press and hold the Recover button (SW1), press and release the Reset button (SW2), and then release the Recover button (SW1).
 
-10. Unplug the board after programming.
+9. Unplug the board after programming.
 
-11. Exit the *GATT_server* application and navigate to the *GATT_client* application folder:
+10. Exit the *GATT_server* application and navigate to the *GATT_client* application folder:
     ```
     > cd ../GATT_client
     ```
-12. Build the *GATT_client* application:
+11. Build the *GATT_client* application:
     ```
     > make build
     ```
-13. Connect the other board and program it:
+12. Connect the other board and program it:
     ```
     > make qprogram
     ```
 
-14. After successfully programming the BLE GATT Client application, plug in the first board.
+13. After successfully programming the BLE GATT Client application, plug in the first board.
 
-15. To build and program the application to the board in a single step, run the `make program` command from respective application folder paths:
+14. To build and program the application to the board in a single step, run the `make program` command from respective application folder paths:
     ```
     > make program
     ```
 
     **Note**: `make program` = `make build` + `make qprogram`
 
+### In Third-party IDEs:
+
+1. Follow the instructions from the CLI section to download or clone the application repository and wiced_btsdk repository, and import libraries using the `make getlibs` command.
+
+2. Export the application to a supported IDE using the `make <ide>` command.
+
+   To export this code example, you need to execute `make <ide>` twice because there are two applications in the same project.
+   - First, navigate to the GATT_client application folder and call `make <ide>`.
+   - Next, navigate to the GATT_server application folder and repeat the command.
+
+3. Follow the instructions displayed in the terminal to create or import both the applications as an IDE project.
+
+For more details, see the "Exporting to IDEs" section of the ModusToolbox User Guide: *{ModusToolbox install directory}/ide_{version}/docs/mtb_user_guide.pdf*.
+
 ## Operation
 
-###	Using Two Boards:
+###	Using Two BT SoC Boards:
+
 1. Connect the two boards to your PC using the provided USB cable through the USB connector.
 
 2. Open a terminal program and select the WICED PUART COM port. Set the serial port parameters to 8N1 and 115200 baud. You need two windows of the terminal application to view messages from the GATT Server device and the GATT Client device.
@@ -158,27 +177,27 @@ To use an iOS or Android smartphone as the BLE Central device, download the CySm
 4. After programming, the application starts automatically. The GATT server device will start advertising.
 
     ##### Figure 1. Terminal Output for GATT Server when It Is Advertising
-      ![Server Adv TT](./images/server-adv-tt.png)
+      ![Server Adv TT](images/server-adv-tt.png)
 
 5. Press SW3 on your GATT Client device to start scanning. The Client will check for peer devices with the name 'TPUT'. If it finds a device with this name, it will initiate the connection. Therefore, after pressing the button, kits will be automatically connected. After GATT connection, PHY, MTU and connection interval values are negotiated. LED 1 will turn ON after connection.
 
     ##### Figure 2. Terminal Output for GATT Client After Connection
-      ![Client Scan](./images/client-scan.png)
+      ![Client Scan](images/client-scan.png)
 
     Now, you should be able to see throughput values (in kbps) on the terminal. After connection, the BLE GATT Client device will subscribe for notifications and the BLE GATT Server will start sending GATT notifications of 244 bytes. For every one second, throughput is calculated and displayed on the terminal. In this case, the BLE GATT Server will calculate the TX throughput, while the BLE GATT Client will calculate the RX throughput. LED 2 on the GATT Server will turn ON if there is data transfer.
 
     ##### Figure 3. Terminal Output: Data Transfer Mode 1
-      ![Data Transfer Mode 1](./images/data-transfer-mode1.png)
+      ![Data Transfer Mode 1](images/data-transfer-mode1.png)
 
 6. Press SW3 on the BLE GATT Client device. Notifications are disabled, and GATT write is enabled. LED 2 on the GATT Server device turns OFF. LED 2 on the GATT Client device turns ON if there is data transfer.
 
     ##### Figure 4. Terminal Output: Data Transfer Mode 2
-      ![Data Transfer Mode 2](./images/data-transfer-mode2.png)
+      ![Data Transfer Mode 2](images/data-transfer-mode2.png)
 
 7. Press SW3 again. Notifications are enabled, and GATT write will stay enabled. LED 2 on both boards will turn ON if there is data transfer.
 
     ##### Figure 5. Terminal Output: Data Transfer Mode 3
-      ![Data Transfer Mode 3](./images/data-transfer-mode3.png)
+      ![Data Transfer Mode 3](images/data-transfer-mode3.png)
 
 8. Press the button (SW3) again to keep notifications enabled but disable GATT write. Consecutive button presses will change the mode of data transfer as mentioned in steps 5, 6, and 7.
 
@@ -198,7 +217,7 @@ To use an iOS or Android smartphone as the BLE Central device, download the CySm
 
 4. Open the [CySmart desktop application](https://www.cypress.com/documentation/software-and-drivers/cysmart-bluetooth-le-test-and-debug-tool) and connect to the [CySmart CY5677 dongle](http://www.cypress.com/cy5677) (Central device). See the [CySmart user guide](https://www.cypress.com/file/232316/download) to learn how to use the desktop application.
 
-5. To measure TX GATT throughput of the board:
+5. To measure the TX GATT throughput of the board:
 
    1. Using the CySmart desktop application, **scan** and **connect** to the 'TPUT' device.
 
@@ -231,7 +250,7 @@ To use an iOS or Android smartphone as the BLE Central device, download the CySm
 8. Select **Notify** (see [Figure 6](#Figure-6-Screenshots-of-CySmart-App)). The device will start sending GATT notifications to the mobile. LED 2 will be ON while the device is sending notifications and will be OFF intermittently indicating GATT packet congestion.
 
     ##### Figure 6. CySmart App
-    ![CySmart App](./images/CySmart-app.png)
+    ![CySmart App](images/cysmart-app.png)
 
     The TX GATT throughput values (in kbps) will be displayed on the UART terminal.
 
@@ -253,7 +272,7 @@ While calculating the throughput, you need to consider only GATT data bytes. All
 
 ##### Figure 7. GATT Data Flow
 
-![GATT Data Flow](./images/GATT-data-flow.png)
+![GATT Data Flow](images/gatt-data-flow.png)
 
 To achieve maximum throughput:
 * PHY is set to 2M
@@ -280,7 +299,7 @@ Some of the known factors that impact the data throughput are explained below.
 
 3. **ATT Maximum Transmission Unit (MTU)**
 
-    ATT MTU determines the maximum amount of data that can be handled by the transmitter and receiver as well as how much they can hold in their buffers. The minimum ATT MTU allowed is 23 bytes. This allows a maximum of 20 bytes of ATT payload (3 bytes are used for the ATT header). There is no limit on the maximum MTU value.
+    ATT MTU determines the maximum amount of data that can be handled by the transmitter and receiver as well as how much they can hold in their buffers. The minimum ATT MTU allowed is 23 bytes. This allows a maximum of 20 bytes of ATT payload (3 bytes are used for the ATT header).
 
     If the ATT MTU is exactly 247 bytes, 244 bytes of ATT data will fit into a single packet. If the MTU is greater than 247 bytes, the data is split into multiple packets causing the throughput to go down because of increase in packet overhead and timing in between packets. Therefore, GATT data size chosen in the application is 244 bytes.
 
@@ -294,7 +313,7 @@ Some of the known factors that impact the data throughput are explained below.
 
     ##### Figure 8. LE Packet Format
 
-    ![LE Packet Format](./images/LE-packet-format.png)
+    ![LE Packet Format](images/le-packet-format.png)
 
     As shown in [Figure 8](#Figure-8.-LE-Packet-Format), the LE packet includes many packet header bytes which get added up in each layer that are not accounted for in the application data throughput. To minimize the packet overhead, try to configure the ATT MTU size in such a way that at any time the ATT payload data will fit in a single LE packet. In this code example, the ATT MTU size used is 247 bytes, which exactly matches with the ATT payload data size of 244 bytes.
 
@@ -309,7 +328,7 @@ The GATT Server has a custom service called 'Throughput Measurement'. This servi
 
 ##### Figure 9. Throughput Measurement Custom Service
 
-![Custom Service](./images/custom-service.png)
+![Custom Service](images/custom-service.png)
 
 **Notify Characteristic:** This characteristic is used to send GATT notifications and has a length of 244 bytes. The bytes sent are used to calculate the TX throughput.
 
@@ -354,7 +373,7 @@ Pressing the user button(SW3) switches between the three modes of data transfer 
 
 ##### Figure 10. Three Modes of Data Transfer
 
-![Data Transfer Mode](./images/data-transfer-mode.png)
+![Data Transfer Mode](images/data-transfer-mode.png)
 
 Two timers are used in the application:
 * One-second timer: To calculate the TX/RX throughput and send values over UART to the serial terminal. The throughput values displayed have unit ‘kbps’.
@@ -378,7 +397,7 @@ The application-level source files for this code example are listed in [Table 2]
 
 **Application Flow Diagram**
 ##### Figure 11. Application Flowchart for BLE GATT Server and Client Devices
-![App Flow Chart](./images/app-flow-chart.png)
+![App Flow Chart](images/app-flow-chart.png)
 
 ## Resources and Settings
 This section explains the ModusToolbox resources and their configuration as used in this code example. Note that all the configuration explained in this section has already been done in the code example. The ModusToolbox IDE stores the configuration settings of the application in the *design.modus* file. This file is used by the graphical configurators, which generate the configuration firmware. This firmware is stored in the application’s *GeneratedSource* folder.
@@ -403,20 +422,21 @@ This section explains the ModusToolbox resources and their configuration as used
 |[CYW920820EVB-02 Evaluation Kit](http://www.cypress.com/CYW920820EVB-02)|
 |[CYW920719B2Q40EVB-01 Evaluation kit](https://community.cypress.com/docs/DOC-17736)|
 |**Tool Documentation**|
-|[ModusToolbox IDE](http://www.cypress.com/modustoolbox)| The Cypress IDE for IoT designers|
+|[Eclipse IDE for ModusToolbox](https://www.cypress.com/modustoolbox)    | The multi-platform, Eclipse-based Integrated Development Environment (IDE) that supports application configuration and development for PSoC 6 MCU and IoT designers.             |
 
 --------------------------------------------------------------------------------------------
 ## Document History
 
-Document Title: CE226301 - BLE Throughput Measurement
+Document Title: *CE226301* - *BLE Throughput Measurement*
 
 | Version | Description of Change |
 | ------- | --------------------- |
 | 1.0.0   | New code example      |
+| 1.1.0   | Updated to support ModusToolbox software v2.1 |
 
 ------
 
-![Banner](images/Banner.png)
+![Banner](images/banner.png)
 
 -------------------------------------------------------------------------------
 

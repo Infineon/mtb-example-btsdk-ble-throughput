@@ -1,8 +1,6 @@
 /******************************************************************************
 * File Name:   tput_client.c
 *
-* Version:     1.0.0
-*
 * Description: This file contains APPLICATION_START(), which is the starting
 *              point of code execution. In this file, PUART is initialized for
 *              UART trace messages and bluetooth controller and host stack are
@@ -47,6 +45,7 @@
 #include "app_bt_cfg.h"
 #include "tput_client_ble.h"
 #include "sparcommon.h"
+
 /*******************************************************************************
 * Function Name: void application_start( void )
 ********************************************************************************
@@ -57,9 +56,9 @@
 *   None
 *
 * Return:
-*  None
+*   None
 *
-********************************************************************************/
+*******************************************************************************/
 APPLICATION_START()
 {
     wiced_result_t status = WICED_BT_SUCCESS;

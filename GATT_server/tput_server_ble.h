@@ -1,8 +1,6 @@
 /******************************************************************************
 * File Name:   tput_server_ble.h
 *
-* Version:     1.0.0
-*
 * Description: Header file for tput_server_ble.c
 *
 * Related Document: See README.md
@@ -49,24 +47,25 @@
 /*****************************************************************************
  *                              EXTERNS and FUNCTIONS
  *****************************************************************************/
-static wiced_bt_gatt_status_t   tput_gatts_callback( wiced_bt_gatt_evt_t, wiced_bt_gatt_event_data_t* );
 wiced_bt_dev_status_t           tput_management_callback( wiced_bt_management_evt_t, wiced_bt_management_evt_data_t* );
 static void                     tput_app_sec_timeout( uint32_t );
 static void                     tput_app_msec_timeout( uint32_t );
 static void                     tput_set_advertisement_data( void );
 static void                     tput_send_notification( void );
 static void                     tput_init( void );
+static void                     tput_gatts_connection_down( void );
+static void                     tput_gatts_connection_up( wiced_bt_gatt_connection_status_t *p_status );
+static void                     tput_gatts_conn_status_cb( wiced_bt_gatt_connection_status_t *p_status );
+static wiced_bt_gatt_status_t   tput_gatts_callback( wiced_bt_gatt_evt_t, wiced_bt_gatt_event_data_t* );
 static wiced_bt_gatt_status_t   tput_gatts_req_cb( wiced_bt_gatt_attribute_request_t *p_data );
 static wiced_bt_gatt_status_t   tput_gatts_req_write_handler( uint16_t conn_id, wiced_bt_gatt_write_t * p_data );
 static wiced_bt_gatt_status_t   tput_gatts_req_read_handler( uint16_t conn_id, wiced_bt_gatt_read_t * p_read_data );
-static void                     tput_gatts_conn_status_cb( wiced_bt_gatt_connection_status_t *p_status );
-static void                     tput_gatts_connection_down( void );
-static void                     tput_gatts_connection_up( void );
 static gatt_db_lookup_table_t*  tput_get_attribute( uint16_t handle );
-const char*                     getStackEventStr( wiced_bt_management_evt_t event );
-/******************************************************
- *                    Structures
- ******************************************************/
+static uint16_t                 get_notification_packet_size( uint16_t att_mtu_size );
+
+/******************************************************************************
+ *                               Structures
+ ******************************************************************************/
 typedef struct
 {
     BD_ADDR     remote_addr;  // remote peer device address
@@ -91,48 +90,7 @@ extern const wiced_bt_cfg_buf_pool_t     wiced_bt_cfg_buf_pools[];
 #define ONE_BYTE                            (8)
 #define SECONDS_TIMER_TIMEOUT               (1)
 #define MILLISECOND_TIMER_TIMEOUT           (1)
-#define GATT_CONNECT_LED                    WICED_GET_PIN_FOR_LED(0) //LED1(D1 on kit)
-#define CONGESTION_LED                      WICED_GET_PIN_FOR_LED(1) //LED2(D2 on kit)
+#define GATT_CONNECT_LED                    LED1
+#define CONGESTION_LED                      LED2
 
-#define   STR(x)  #x
-
-/*
- * BLE Even Management code mapping to string
- */
-const char* eventStr[] =
-{
-    STR(BTM_ENABLED_EVT),
-    STR(BTM_DISABLED_EVT),
-    STR(BTM_POWER_MANAGEMENT_STATUS_EVT),
-    STR(BTM_PIN_REQUEST_EVT),
-    STR(BTM_USER_CONFIRMATION_REQUEST_EVT),
-    STR(BTM_PASSKEY_NOTIFICATION_EVT),
-    STR(BTM_PASSKEY_REQUEST_EVT),
-    STR(BTM_KEYPRESS_NOTIFICATION_EVT),
-    STR(BTM_PAIRING_IO_CAPABILITIES_BR_EDR_REQUEST_EVT),
-    STR(BTM_PAIRING_IO_CAPABILITIES_BR_EDR_RESPONSE_EVT),
-    STR(BTM_PAIRING_IO_CAPABILITIES_BLE_REQUEST_EVT),
-    STR(BTM_PAIRING_COMPLETE_EVT),
-    STR(BTM_ENCRYPTION_STATUS_EVT),
-    STR(BTM_SECURITY_REQUEST_EVT),
-    STR(BTM_SECURITY_FAILED_EVT),
-    STR(BTM_SECURITY_ABORTED_EVT),
-    STR(BTM_READ_LOCAL_OOB_DATA_COMPLETE_EVT),
-    STR(BTM_REMOTE_OOB_DATA_REQUEST_EVT),
-    STR(BTM_PAIRED_DEVICE_LINK_KEYS_UPDATE_EVT),
-    STR(BTM_PAIRED_DEVICE_LINK_KEYS_REQUEST_EVT),
-    STR(BTM_LOCAL_IDENTITY_KEYS_UPDATE_EVT),
-    STR(BTM_LOCAL_IDENTITY_KEYS_REQUEST_EVT),
-    STR(BTM_BLE_SCAN_STATE_CHANGED_EVT),
-    STR(BTM_BLE_ADVERT_STATE_CHANGED_EVT),
-    STR(BTM_SMP_REMOTE_OOB_DATA_REQUEST_EVT),
-    STR(BTM_SMP_SC_REMOTE_OOB_DATA_REQUEST_EVT),
-    STR(BTM_SMP_SC_LOCAL_OOB_DATA_NOTIFICATION_EVT),
-    STR(BTM_SCO_CONNECTED_EVT),
-    STR(BTM_SCO_DISCONNECTED_EVT),
-    STR(BTM_SCO_CONNECTION_REQUEST_EVT),
-    STR(BTM_SCO_CONNECTION_CHANGE_EVT),
-    STR(BTM_BLE_CONNECTION_PARAM_UPDATE),
-    STR(BTM_BLE_PHY_UPDATE_EVT)
-};
 #endif /* TPUT_SERVER_BLE_H_ */

@@ -1,8 +1,6 @@
 /******************************************************************************
 * File Name:   tput_server.c
 *
-* Version:     1.0.0
-*
 * Description: This file contains APPLICATION_START(), which is the starting
 *              point of code execution. In this file, PUART is initialized for
 *              UART trace messages and bluetooth controller and host stack are
