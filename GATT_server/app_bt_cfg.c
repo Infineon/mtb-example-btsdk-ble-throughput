@@ -1,42 +1,42 @@
-/*
- * Copyright 2020, Cypress Semiconductor Corporation or a subsidiary of
- * Cypress Semiconductor Corporation. All Rights Reserved.
- *
- * This software, including source code, documentation and related
- * materials ("Software"), is owned by Cypress Semiconductor Corporation
- * or one of its subsidiaries ("Cypress") and is protected by and subject to
- * worldwide patent protection (United States and foreign),
- * United States copyright laws and international treaty provisions.
- * Therefore, you may use this Software only as provided in the license
- * agreement accompanying the software package from which you
- * obtained this Software ("EULA").
- * If no EULA applies, Cypress hereby grants you a personal, non-exclusive,
- * non-transferable license to copy, modify, and compile the Software
- * source code solely for use in connection with Cypress's
- * integrated circuit products. Any reproduction, modification, translation,
- * compilation, or representation of this Software except as specified
- * above is prohibited without the express written permission of Cypress.
- *
- * Disclaimer: THIS SOFTWARE IS PROVIDED AS-IS, WITH NO WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, NONINFRINGEMENT, IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. Cypress
- * reserves the right to make changes to the Software without notice. Cypress
- * does not assume any liability arising out of the application or use of the
- * Software or any product or circuit described in the Software. Cypress does
- * not authorize its products for use in any products where a malfunction or
- * failure of the Cypress product may reasonably be expected to result in
- * significant property damage, injury or death ("High Risk Product"). By
- * including Cypress's product in a High Risk Product, the manufacturer
- * of such system or application assumes all risk of such use and in doing
- * so agrees to indemnify Cypress against all liability.
- */
+/*******************************************************************************
+* Copyright 2020-2021, Cypress Semiconductor Corporation (an Infineon company) or
+* an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
+*
+* This software, including source code, documentation and related
+* materials ("Software") is owned by Cypress Semiconductor Corporation
+* or one of its affiliates ("Cypress") and is protected by and subject to
+* worldwide patent protection (United States and foreign),
+* United States copyright laws and international treaty provisions.
+* Therefore, you may use this Software only as provided in the license
+* agreement accompanying the software package from which you
+* obtained this Software ("EULA").
+* If no EULA applies, Cypress hereby grants you a personal, non-exclusive,
+* non-transferable license to copy, modify, and compile the Software
+* source code solely for use in connection with Cypress's
+* integrated circuit products.  Any reproduction, modification, translation,
+* compilation, or representation of this Software except as specified
+* above is prohibited without the express written permission of Cypress.
+*
+* Disclaimer: THIS SOFTWARE IS PROVIDED AS-IS, WITH NO WARRANTY OF ANY KIND,
+* EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, NONINFRINGEMENT, IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. Cypress
+* reserves the right to make changes to the Software without notice. Cypress
+* does not assume any liability arising out of the application or use of the
+* Software or any product or circuit described in the Software. Cypress does
+* not authorize its products for use in any products where a malfunction or
+* failure of the Cypress product may reasonably be expected to result in
+* significant property damage, injury or death ("High Risk Product"). By
+* including Cypress's product in a High Risk Product, the manufacturer
+* of such system or application assumes all risk of such use and in doing
+* so agrees to indemnify Cypress against all liability.
+*******************************************************************************/
 
-/** app_bt_cfg.c
+/*******************************************************************************
+ * File Name : app_bt_cfg.c
  *
  * Runtime Bluetooth stack configuration parameters
  *
- */
-
+ ******************************************************************************/
 
 #include "app_bt_cfg.h"
 #include "wiced_bt_dev.h"
@@ -71,7 +71,7 @@ const wiced_bt_cfg_settings_t wiced_bt_cfg_settings =
     },
 
     .ble_scan_cfg =                                                 /* BLE scan settings  */
-    {.scan_mode                       = BTM_BLE_SCAN_MODE_ACTIVE,                                      /**< BLE scan mode ( BTM_BLE_SCAN_MODE_PASSIVE, BTM_BLE_SCAN_MODE_ACTIVE, or BTM_BLE_SCAN_MODE_NONE ) */
+    {   .scan_mode                       = BTM_BLE_SCAN_MODE_ACTIVE,                                      /**< BLE scan mode ( BTM_BLE_SCAN_MODE_PASSIVE, BTM_BLE_SCAN_MODE_ACTIVE, or BTM_BLE_SCAN_MODE_NONE ) */
 
         /* Advertisement scan configuration */
         .high_duty_scan_interval         = WICED_BT_CFG_DEFAULT_HIGH_DUTY_SCAN_INTERVAL,               /**< High duty scan interval */
@@ -106,7 +106,7 @@ const wiced_bt_cfg_settings_t wiced_bt_cfg_settings =
 
         .high_duty_min_interval          = WICED_BT_CFG_DEFAULT_HIGH_DUTY_ADV_MIN_INTERVAL,            /**< High duty undirected connectable minimum advertising interval */
         .high_duty_max_interval          = WICED_BT_CFG_DEFAULT_HIGH_DUTY_ADV_MAX_INTERVAL,            /**< High duty undirected connectable maximum advertising interval */
-        .high_duty_duration              = 30,                                                          /**< High duty undirected connectable advertising duration in seconds (0 for infinite) */
+        .high_duty_duration              = 0,                                                          /**< High duty undirected connectable advertising duration in seconds (0 for infinite) */
 
         .low_duty_min_interval           = WICED_BT_CFG_DEFAULT_LOW_DUTY_ADV_MIN_INTERVAL,             /**< Low duty undirected connectable minimum advertising interval */
         .low_duty_max_interval           = WICED_BT_CFG_DEFAULT_LOW_DUTY_ADV_MAX_INTERVAL,             /**< Low duty undirected connectable maximum advertising interval */
@@ -181,11 +181,12 @@ const wiced_bt_cfg_settings_t wiced_bt_cfg_settings =
 
     /* Interval of  random address refreshing */
     .rpa_refresh_timeout                = WICED_BT_CFG_DEFAULT_RANDOM_ADDRESS_NEVER_CHANGE,           /**< Interval of  random address refreshing - secs */
-    /* BLE white list size */
-    .ble_white_list_size                = 0,                                                          /**< Maximum number of white list devices allowed. Cannot be more than 128 */
+    /* ble_filter_accept_list_size */
+    .ble_filter_accept_list_size        = 0,                                                          /**< Maximum number of white list devices allowed. Cannot be more than 128 */
 
+#if  !defined (CYW20735B1)
     .default_ble_power_level            = 12                                                          /**< Default LE power level, Refer lm_TxPwrTable table for the power range */
-
+#endif
 };
 
 /*****************************************************************************

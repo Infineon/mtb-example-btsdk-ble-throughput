@@ -1,81 +1,67 @@
+################################################################################
+# \file Makefile
+# \version 1.0
 #
-# Copyright 2020, Cypress Semiconductor Corporation or a subsidiary of
-# Cypress Semiconductor Corporation. All Rights Reserved.
+# \brief
+# Top-level application make file.
 #
-# This software, including source code, documentation and related
-# materials ("Software"), is owned by Cypress Semiconductor Corporation
-# or one of its subsidiaries ("Cypress") and is protected by and subject to
-# worldwide patent protection (United States and foreign),
-# United States copyright laws and international treaty provisions.
-# Therefore, you may use this Software only as provided in the license
-# agreement accompanying the software package from which you
-# obtained this Software ("EULA").
-# If no EULA applies, Cypress hereby grants you a personal, non-exclusive,
-# non-transferable license to copy, modify, and compile the Software
-# source code solely for use in connection with Cypress's
-# integrated circuit products. Any reproduction, modification, translation,
-# compilation, or representation of this Software except as specified
-# above is prohibited without the express written permission of Cypress.
-#
-# Disclaimer: THIS SOFTWARE IS PROVIDED AS-IS, WITH NO WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, NONINFRINGEMENT, IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. Cypress
-# reserves the right to make changes to the Software without notice. Cypress
-# does not assume any liability arising out of the application or use of the
-# Software or any product or circuit described in the Software. Cypress does
-# not authorize its products for use in any products where a malfunction or
-# failure of the Cypress product may reasonably be expected to result in
-# significant property damage, injury or death ("High Risk Product"). By
-# including Cypress's product in a High Risk Product, the manufacturer
-# of such system or application assumes all risk of such use and in doing
-# so agrees to indemnify Cypress against all liability.
-#
+################################################################################
+# \copyright
+# Copyright 2018-2021, Cypress Semiconductor Corporation (an Infineon company)
+# SPDX-License-Identifier: Apache-2.0
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+################################################################################
 
-
-ifeq ($(WHICHFILE),true)
-$(info Processing $(lastword $(MAKEFILE_LIST)))
-endif
 
 ################################################################################
 # Basic Configuration
 ################################################################################
+
+# Target board/hardware (BSP).
+# To change the target, it is recommended to use the Library manager
+# ('make modlibs' from command line), which will also update Eclipse IDE launch
+# configurations. If TARGET is manually edited, ensure TARGET_<BSP>.mtb with a
+# valid URL exists in the application, run 'make getlibs' to fetch BSP contents
+# and update or regenerate launch configurations for your IDE.
+TARGET=CYW920819EVB-02
+
 # Name of application (used to derive name of final linked file).
-APPNAME=BLE_Throughput_GATTServer
+#
+# If APPNAME is edited, ensure to update or regenerate launch
+# configurations for your IDE.
+APPNAME=ble-throughput-gatt-server
 
 # Name of toolchain to use. Options include:
 #
-# GCC_ARM -- GCC 7.2.1, provided with ModusToolbox IDE
-# ARM     -- ARM Compiler (must be installed separately)
-# IAR     -- IAR Compiler (must be installed separately)
+# GCC_ARM -- GCC provided with ModusToolbox IDE
 #
 # See also: CY_COMPILER_PATH below
 TOOLCHAIN=GCC_ARM
 
 # Default build configuration. Options include:
 #
-# Debug   -- build with minimal optimizations, focus on debugging.
+# Debug -- build with minimal optimizations, focus on debugging.
 # Release -- build with full optimizations
+# Custom -- build with custom configuration, set the optimization flag in CFLAGS
+#
+# If CONFIG is manually edited, ensure to update or regenerate launch configurations 
+# for your IDE.
 CONFIG=Debug
 
 # If set to "true" or "1", display full command-lines when building.
 VERBOSE=
 
-# default target
-TARGET=CYW920819EVB-02
-TARGET_DEVICE_MAP = \
-  CYW920819EVB-02/20819A1 \
-  CYW920820EVB-02/20820A1 \
-  CYBT-213043-EVAL/20819A1 \
-  CYBT-213043-MESH/20819A1 \
-  CYW989820EVB-01/20820A1 \
-  CYW920721B2EVK-01/20721B2 \
-  CYW920721B2EVK-03/20721B2 \
-  CYW920721B2EVK-02/20721B2 \
-  CYW920719B2Q40EVB-01/20719B2 \
-  CYW920706WCDEVAL/20706A2 \
-  CYBT-353027-EVAL/20706A2
-
-CY_TARGET_DEVICE = $(patsubst $(TARGET)/%,%,$(filter $(TARGET)%,$(TARGET_DEVICE_MAP)))
 
 ################################################################################
 # Advanced Configuration
@@ -104,14 +90,7 @@ SOURCES=
 
 # Like SOURCES, but for include directories. Value should be paths to
 # directories (without a leading -I).
-INCLUDES=\
-    $(CY_BASELIB_PATH)/include \
-    $(CY_BASELIB_PATH)/include/hal \
-    $(CY_BASELIB_PATH)/include/internal \
-    $(CY_BASELIB_PATH)/include/stack \
-    $(CY_BASELIB_PATH)/internal/$(CY_TARGET_DEVICE) \
-    $(CY_SHARED_PATH)/dev-kit/btsdk-include \
-    $(CY_BSP_PATH)
+INCLUDES=
 
 # Add additional defines to the build process (without a leading -D).
 DEFINES=
@@ -163,15 +142,7 @@ XIP?=xip
 TRANSPORT?=UART
 ENABLE_DEBUG?=0
 
-# Use VERBOSE_THROUGHPUT_OUTPUT=1 to have verbose messages on console for debugging
-VERBOSE_THROUGHPUT_OUTPUT_DEFAULT=0
-
-VERBOSE_THROUGHPUT_OUTPUT ?= $(VERBOSE_THROUGHPUT_OUTPUT_DEFAULT)
-
-# declare the feature for GUI settings processing
-APP_FEATURES= \
-    VERBOSE_THROUGHPUT_OUTPUT,app,enum,$(VERBOSE_THROUGHPUT_OUTPUT_DEFAULT),0,1
-# wait for SWD attach
+# Wait for SWD attach
 ifeq ($(ENABLE_DEBUG),1)
 CY_APP_DEFINES+=-DENABLE_DEBUG=1
 endif
@@ -179,41 +150,39 @@ endif
 CY_APP_DEFINES+=\
     -DWICED_BT_TRACE_ENABLE
 
-ifeq ($(VERBOSE_THROUGHPUT_OUTPUT),1)
-CY_APP_DEFINES += -DVERBOSE_THROUGHPUT_OUTPUT
-endif
-
 #
 # Components (middleware libraries)
 #
 COMPONENTS +=bsp_design_modus
-CY_CONFIG_MODUS_FILE:=
 
 ################################################################################
 # Paths
 ################################################################################
 
 # Relative path to the project directory (default is the Makefile's directory).
+#
 # This controls where automatic source code discovery looks for code.
-CY_APP_PATH=.
+CY_APP_PATH=
 
-# Path (absolute or relative) to the bt-sdk folder (at repo root)
-CY_SHARED_PATH=$(CY_APP_PATH)/../../wiced_btsdk
-# Absolute path to the root of the BTSDK
-CY_SHARED_PATH_ABS=$(CURDIR)/../../wiced_btsdk
-# Path (absolute or relative) to the base library
-CY_BASELIB_PATH=$(CY_SHARED_PATH)/dev-kit/baselib/$(CY_TARGET_DEVICE)
+# Relative path to the shared repo location.
+#
+# All .mtb files have the format, <URI>#<COMMIT>#<LOCATION>. If the <LOCATION> field
+# begins with $$ASSET_REPO$$, then the repo is deposited in the path specified by
+# the CY_GETLIBS_SHARED_PATH variable. The default location is one directory level
+# above the current app directory.
+# This is used with CY_GETLIBS_SHARED_NAME variable, which specifies the directory name.
+CY_GETLIBS_SHARED_PATH=../../
 
-# Path to the bsp library
-CY_BSP_PATH=$(CY_SHARED_PATH)/dev-kit/bsp/TARGET_$(TARGET)
+# Directory name of the shared repo location.
+#
+CY_GETLIBS_SHARED_NAME=mtb_shared
 
-INCLUDES+=\
-    $(CY_BASELIB_PATH)/WICED/common
-
-CY_DEVICESUPPORT_PATH=$(CY_BASELIB_PATH)
-
-# Absolute path to the compiler (Default: GCC in the tools)
+# Absolute path to the compiler's "bin" directory.
+#
+# The default depends on the selected TOOLCHAIN (GCC_ARM uses the ModusToolbox
+# IDE provided compiler by default).
 CY_COMPILER_PATH=
+
 
 # Locate ModusToolbox IDE helper tools folders in default installation
 # locations for Windows, Linux, and macOS.
@@ -221,12 +190,11 @@ CY_WIN_HOME=$(subst \,/,$(USERPROFILE))
 CY_TOOLS_PATHS ?= $(wildcard \
     $(CY_WIN_HOME)/ModusToolbox/tools_* \
     $(HOME)/ModusToolbox/tools_* \
-    /Applications/ModusToolbox/tools_* \
-    $(CY_IDE_TOOLS_DIR))
+    /Applications/ModusToolbox/tools_*)
 
 # If you install ModusToolbox IDE in a custom location, add the path to its
 # "tools_X.Y" folder (where X and Y are the version number of the tools
-# folder).
+# folder). Make sure you use forward slashes.
 CY_TOOLS_PATHS+=
 
 # Default to the newest installed tools folder, or the users override (if it's
@@ -234,79 +202,12 @@ CY_TOOLS_PATHS+=
 CY_TOOLS_DIR=$(lastword $(sort $(wildcard $(CY_TOOLS_PATHS))))
 
 ifeq ($(CY_TOOLS_DIR),)
-$(error Unable to find any of the available CY_TOOLS_PATHS -- $(CY_TOOLS_PATHS))
+$(error Unable to find any of the available CY_TOOLS_PATHS -- $(CY_TOOLS_PATHS). On Windows, use forward slashes.)
 endif
 
-# path to WICED tools root folder
-CY_WICED_TOOLS_ROOT?=$(CY_SHARED_PATH)/dev-kit/btsdk-tools
+$(info Tools Directory: $(CY_TOOLS_DIR))
 
 # tools that can be launched with "make open CY_OPEN_TYPE=<tool>
 CY_BT_APP_TOOLS=BTSpy ClientControl
 
-# getlibs path
-CY_GETLIBS_PATH=.
-
-# paths to shared_libs targets
-SEARCH_LIBS_AND_INCLUDES=$(CY_BSP_PATH) $(CY_BASELIB_PATH)
-ifeq ($(OTA_FW_UPGRADE),1)
-SEARCH_LIBS_AND_INCLUDES+=$(CY_SHARED_PATH)/dev-kit/libraries/btsdk-ota
-endif
-
-# common make arguments for lib builds
-MAKE_OVERRIDES=OTA_FW_UPGRADE=$(OTA_FW_UPGRADE)
-export CONFIG
-export COMPONENTS
-export DISABLE_COMPONENTS
-CY_SHARED_LIB_ARGS:=$(MAKECMDGOALS) $(MAKE_OVERRIDES) CY_APP_DEFINES+="$(CY_APP_DEFINES)" CY_TARGET_DEVICE=$(CY_TARGET_DEVICE) TARGET=$(TARGET)
-
-.PHONY: $(SEARCH_LIBS_AND_INCLUDES) shared_libs
-
-# recursive make on each shared_lib project
-shared_libs: $(SEARCH_LIBS_AND_INCLUDES)
-$(SEARCH_LIBS_AND_INCLUDES):
-	$(MAKE) -C $@ $(CY_SHARED_LIB_ARGS)
-
-CY_APP_LOCATION=$(lastword $(MAKEFILE_LIST))
-
-CY_APP_BUILD_GOALS:=build qbuild clean program qprogram debug qdebug all
--include internal.mk
-ifeq ($(filter setup teardown,$(MAKECMDGOALS)),)
-
-# ensure pre-requisite wiced_btsdk project is present
-ifeq ($(wildcard $(CY_SHARED_PATH)),)
-# if not present, IDE will be trying to run make eclipse to get launch configuration
-# need to store in that case and re-run later after the wiced_btsdk project exists
-ifeq ($(MAKECMDGOALS),eclipse)
-$(shell echo $(CY_IDE_PRJNAME) > ./.cy_ide_prjname)
-endif
-ifneq ($(filter eclipse $(CY_APP_BUILD_GOALS),$(MAKECMDGOALS)),)
-$(warning BTSDK application projects require the wiced_btsdk project as a prerequisite.)
-$(warning Please create the wiced_btsdk project via New Application wizard in the IDE or via git clone for CLI.)
-$(error Missing prerequisite wiced_btsdk project)
-endif
-endif
-
-# ensure that the wiced_btsdk project has performed getlibs to populate the assets (CLI only)
-ifneq ($(filter $(CY_APP_BUILD_GOALS),$(MAKECMDGOALS)),)
-ifeq ($(wildcard $(CY_BASELIB_PATH)),)
-$(warning Prerequisite baselib path $(CY_BASELIB_PATH) not found under wiced_btsdk project.)
-$(warning Please perform 'make getlibs' in the $(CY_SHARED_PATH) folder.)
-$(error Missing prerequisite $(CY_BASELIB_PATH))
-endif
-endif
-
-# all prerequisites satisfied, check for .cy_ide_prjname if stored earlier
-ifeq ($(CY_MAKE_IDE),eclipse)
-ifneq ($(filter $(CY_APP_BUILD_GOALS),$(MAKECMDGOALS)),)
-ifneq ($(wildcard ./.cy_ide_prjname),)
-CY_IDE_PRJNAME=`cat ./.cy_ide_prjname`
-$(MAKECMDGOALS): regenerate_launches
-regenerate_launches:
-	@make -C . eclipse CY_IDE_PRJNAME=$(CY_IDE_PRJNAME)
-	@rm ./.cy_ide_prjname
-endif
-endif
-endif
 include $(CY_TOOLS_DIR)/make/start.mk
-endif
-
