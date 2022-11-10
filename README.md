@@ -11,16 +11,16 @@ This code example has two applications:
 
 [View this README on GitHub.](https://github.com/Infineon/mtb-example-btsdk-ble-throughput)
 
-[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMjYzMDEiLCJTcGVjIE51bWJlciI6IjAwMi0yNjMwMSIsIkRvYyBUaXRsZSI6IkFJUk9DJnRyYWRlOyBDWVcyMHh4eCBCbHVldG9vdGgmcmVnOyBkZXZpY2VzOiBCbHVldG9vdGgmcmVnOyBMRSB0aHJvdWdocHV0IiwicmlkIjoibmhlZyIsIkRvYyB2ZXJzaW9uIjoiMi4xLjAiLCJEb2MgTGFuZ3VhZ2UiOiJFbmdsaXNoIiwiRG9jIERpdmlzaW9uIjoiTUNEIiwiRG9jIEJVIjoiSUNXIiwiRG9jIEZhbWlseSI6IkJUQUJMRSJ9)
+[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMjYzMDEiLCJTcGVjIE51bWJlciI6IjAwMi0yNjMwMSIsIkRvYyBUaXRsZSI6IkFJUk9DJnRyYWRlOyBDWVcyMHh4eCBCbHVldG9vdGgmcmVnOyBkZXZpY2VzOiBCbHVldG9vdGgmcmVnOyBMRSB0aHJvdWdocHV0IiwicmlkIjoibmhlZyIsIkRvYyB2ZXJzaW9uIjoiMi4yLjAiLCJEb2MgTGFuZ3VhZ2UiOiJFbmdsaXNoIiwiRG9jIERpdmlzaW9uIjoiTUNEIiwiRG9jIEJVIjoiSUNXIiwiRG9jIEZhbWlseSI6IkJUQUJMRSJ9)
 
 ## Requirements
 
-- [ModusToolbox&trade; software](https://www.cypress.com/products/modustoolbox-software-environment) v2.4
+- [ModusToolbox&trade; software](https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software/) v2.4 or later (tested with v2.4)
 
 - Board support package (BSP) minimum required version: 3.3.0
 - Programming language: C
 
-- Associated parts:  [AIROC™ CYW20819 Bluetooth® & Bluetooth® LE system-on-chip](https://www.cypress.com/datasheet/CYW20819), [AIROC™ CYW20719 Bluetooth® & Bluetooth® LE system-on-chip](https://www.cypress.com/documentation/datasheets/cyw20719-enhanced-low-power-bredrble-bluetooth-50-soc), [AIROC™ CYW20735 Bluetooth® & Bluetooth® LE system-on-chip](https://www.cypress.com/documentation/datasheets/cyw20735b1-single-chip-bluetooth-transceiver-wireless-input-devices), [AIROC™ CYW20820 Bluetooth® & Bluetooth® LE system-on-chip](https://www.infineon.com/dgdl/Infineon-CYW20820_Ultra_Low_Power_Bluetooth_LE_BR_EDR_Bluetooth_5.0_SoC-AdditionalTechnicalInformation-v06_00-EN.pdf?fileId=8ac78c8c7d0d8da4017d0ee7e70770d1&utm_source=cypress&utm_medium=referral&utm_campaign=202110_globe_en_all_integration-datasheet)
+- Associated parts:  [AIROC™ CYW20819 Bluetooth® & Bluetooth® LE system-on-chip](https://www.infineon.com/dgdl/Infineon-CYW20819_Ultra_Low_Power_Bluetooth_LE_BR_EDR_Bluetooth_5.0_SoC-AdditionalTechnicalInformation-v07_00-EN.pdf?fileId=8ac78c8c7d0d8da4017d0ee7dba070bf), [AIROC™ CYW20719 Bluetooth® & Bluetooth® LE system-on-chip](https://www.infineon.com/dgdl/Infineon-CYW20719B2KUMLGT-DataSheet-v07_00-EN.pdf?fileId=8ac78c8c7d0d8da4017d0ee7edf470db), [AIROC™ CYW20820 Bluetooth® & Bluetooth® LE system-on-chip](https://www.infineon.com/dgdl/Infineon-CYW20820_Ultra_Low_Power_Bluetooth_LE_BR_EDR_Bluetooth_5.0_SoC-AdditionalTechnicalInformation-v06_00-EN.pdf?fileId=8ac78c8c7d0d8da4017d0ee7e70770d1)
 
 
 
@@ -31,10 +31,11 @@ This code example has two applications:
 ## Supported kits (make variable 'TARGET')
 
 - [CYW920820M2EVB-01 evaluation kit](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-bluetooth-le-bluetooth-multiprotocol/cyw20820/)(`CYW920820M2EVB-01`)- Default value of `TARGET`
-- [CYW920719B2Q40EVB-01 evaluation kit](https://www.cypress.com/documentation/development-kitsboards/cyw920719b2q40evb-01-evaluation-kit) (`CYW920719B2Q40EVB-01`)
-- [CYW920735Q60EVB-01 evaluation kit](https://www.cypress.com/CYW920735Q60EVB-01) (`CYW920735Q60EVB-01`)
-- [CYW920819EVB-02 evaluation kit](https://www.cypress.com/CYW920819EVB-02) (`CYW920819EVB-02`)
-- [CYW920820EVB-02 evaluation kit](https://www.cypress.com/CYW920820EVB-02) (`CYW920820EVB-02`)
+- [CYW920819M2EVB-01 evaluation kit](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-bluetooth-le-bluetooth-multiprotocol/cyw20819/)(`CYW920819M2EVB-01`)
+- [CYW920719B2Q40EVB-01 evaluation kit](https://www.infineon.com/cms/en/product/evaluation-boards/cyw920719b2q40evb-01/) (`CYW920719B2Q40EVB-01`)
+- [CYW920819EVB-02 evaluation kit](https://www.infineon.com/cms/en/product/evaluation-boards/cyw920819evb-02/) (`CYW920819EVB-02`)
+- [CYW920820EVB-02 evaluation kit](https://www.infineon.com/cms/en/design-support/finder-selection-tools/product-finder/evaluation-board/) (`CYW920820EVB-02`)
+
 
 ## Hardware setup
 
@@ -49,9 +50,9 @@ Any combination of the kits mentioned in [supported kits](#Supported-kits-(make-
 
 Install a terminal emulator if you don't have one. Instructions in this document use [Tera Term](https://ttssh2.osdn.jp/index.html.en).
 
-To use a Windows PC as the Bluetooth&reg; LE Central device for the GATT Server throughput application, install [CySmart host emulation tool](https://www.cypress.com/documentation/software-and-drivers/cysmart-bluetooth-le-test-and-debug-tool). You will also need [CY5677 CySmart Bluetooth&reg; LE 4.2 USB dongle](https://www.cypress.com/documentation/development-kitsboards/cy5677-cysmart-bluetooth-low-energy-ble-42-usb-dongle).
 
-To use an iOS or Android smartphone as the Bluetooth&reg; LE Central device, download the CySmart app. Scan the following QR codes from your mobile phone to download the CySmart app.
+
+To use an iOS or Android smartphone as the Bluetooth&reg; LE Central device, download the LightBlue app. Scan the following QR codes from your mobile phone to download the LightBlue app.
 
 ![](images/qr.png)
 
@@ -63,11 +64,11 @@ Create the project and open it using one of the following:
 
 <details><summary><b>In Eclipse IDE for ModusToolbox&trade; software</b></summary>
 
-1. Click the **New Application** link in the **Quick Panel** (or, use **File** > **New** > **ModusToolbox Application**). This launches the [Project Creator](https://www.cypress.com/ModusToolboxProjectCreator) tool.
+1. Click the **New Application** link in the **Quick Panel** (or, use **File** > **New** > **ModusToolbox Application**). This launches the [Project Creator](https://www.infineon.com/dgdl/Infineon-ModusToolbox_Project_Creator_Guide_3-UserManual-v01_00-EN.pdf?fileId=8ac78c8c7d718a49017d99bcabbd31e5) tool.
 
 2. Pick a kit supported by the code example from the list shown in the **Project Creator - Choose Board Support Package (BSP)** dialog.
 
-   When you select a supported kit, the example is reconfigured automatically to work with the kit. To work with a different supported kit later, use the [Library Manager](https://www.cypress.com/ModusToolboxLibraryManager) to choose the BSP for the supported kit and deselect the other BSPs. Keep only the required BSP in your application. You can use the Library Manager to select or update the BSP and firmware libraries used in this application. To access the Library Manager, click the link from the **Quick Panel**.
+   When you select a supported kit, the example is reconfigured automatically to work with the kit. To work with a different supported kit later, use the [Library Manager](https://www.infineon.com/dgdl/Infineon-ModusToolbox_Library_Manager_User_Guide_3-UserManual-v01_00-EN.pdf?fileId=8ac78c8c7d718a49017d99ab34b831ce) to choose the BSP for the supported kit and deselect the other BSPs. Keep only the required BSP in your application. You can use the Library Manager to select or update the BSP and firmware libraries used in this application. To access the Library Manager, click the link from the **Quick Panel**.
 
    You can also just start the application creation process again and select a different kit.
 
@@ -81,7 +82,7 @@ Create the project and open it using one of the following:
 
 6. Click **Create** to complete the application creation process.
 
-For more details, see the [Eclipse IDE for ModusToolbox&trade; software user guide](https://www.cypress.com/MTBEclipseIDEUserGuide) (locally available at *{ModusToolbox&trade; software install directory}/ide_{version}/docs/mt_ide_user_guide.pdf*).
+For more details, see the [Eclipse IDE for ModusToolbox&trade; software user guide](https://www.infineon.com/dgdl/Infineon-Eclipse_IDE_for_ModusToolbox_User_Guide_1-UserManual-v01_00-EN.pdf?fileId=8ac78c8c7d718a49017d99bcb86331e8) (locally available at *{ModusToolbox&trade; software install directory}/ide_{version}/docs/mt_ide_user_guide.pdf*).
 
    **Note:** Both the GATT Server and GATT Client applications are created for the same kit that you have selected in **Step 2**.
 
@@ -110,7 +111,7 @@ The following example will clone the "[Hello World](https://github.com/Infineon/
    project-creator-cli --board-id CY8CKIT-062-WIFI-BT --app-id mtb-example-psoc6-hello-world --user-app-name MyHelloWorld --target-dir "C:/mtb_projects"
    ```
 
-**Note:** The project-creator-cli tool uses the `git clone` and `make getlibs` commands to fetch the repository and import the required libraries. For details, see the "Project creator tools" section of the [ModusToolbox&trade; software user guide](https://www.cypress.com/ModusToolboxUserGuide) (locally available at *{ModusToolbox&trade; software install directory}/docs_{version}/mtb_user_guide.pdf*).
+**Note:** The project-creator-cli tool uses the `git clone` and `make getlibs` commands to fetch the repository and import the required libraries. For details, see the "Project creator tools" section of the [ModusToolbox&trade; software user guide](https://www.infineon.com/dgdl/Infineon-ModusToolbox_2.4_User_Guide-Software-v01_00-EN.pdf?fileId=8ac78c8c7e7124d1017ed97e72563632) (locally available at *{ModusToolbox&trade; software install directory}/docs_{version}/mtb_user_guide.pdf*).
 
 </details>
 
@@ -118,7 +119,7 @@ The following example will clone the "[Hello World](https://github.com/Infineon/
 
 Use one of the following options:
 
-- **Use the standalone [Project Creator](https://www.cypress.com/ModusToolboxProjectCreator) tool:**
+- **Use the standalone [Project Creator](https://www.infineon.com/dgdl/Infineon-ModusToolbox_Project_Creator_Guide_3-UserManual-v01_00-EN.pdf?fileId=8ac78c8c7d718a49017d99bcabbd31e5) tool:**
 
    1. Launch Project Creator from the Windows Start menu or from *{ModusToolbox&trade; software install directory}/tools_{version}/project-creator/project-creator.exe*.
 
@@ -138,7 +139,7 @@ Use one of the following options:
 
    3. Follow the instructions displayed in the terminal to create or import the application as an IDE project.
 
-For a list of supported IDEs and more details, see the "Exporting to IDEs" section of the [ModusToolbox&trade; software user guide](https://www.cypress.com/ModusToolboxUserGuide) (locally available at *{ModusToolbox&trade; software install directory}/docs_{version}/mtb_user_guide.pdf*).
+For a list of supported IDEs and more details, see the "Exporting to IDEs" section of the [ModusToolbox&trade; software user guide](https://www.infineon.com/dgdl/Infineon-ModusToolbox_2.4_User_Guide-Software-v01_00-EN.pdf?fileId=8ac78c8c7e7124d1017ed97e72563632) (locally available at *{ModusToolbox&trade; software install directory}/docs_{version}/mtb_user_guide.pdf*).
 
 </details>
 
@@ -222,36 +223,9 @@ For a list of supported IDEs and more details, see the "Exporting to IDEs" secti
     **Note:** To see debug traces, enable the `VERBOSE_THROUHPUT_OUTPUT` macro in the *tput_server_le.h/tput_client_le.h* file.
 
 
-### Using the CySmart desktop application as Bluetooth&reg; LE Central
-
-1. Connect the board to your PC using the provided USB cable through the USB connector.
-
-2. Open any serial terminal program and select the **WICED PUART COM** port. Set the serial port parameters to 8N1 and 115200 baud.
-
-3. Program the board with the "LE_Throughput ble-throughput-gatt-server" application.
-
-4. Open the CySmart desktop application and connect to the CySmart CY5677 dongle (Central device). See the [CySmart user guide](https://www.cypress.com/file/232316/download) to learn how to use the desktop application.
-
-5. Do the following to measure the Tx GATT throughput of the board:
-
-   1. Using the CySmart desktop application, **scan** and **connect** to the 'TPUT' device.
-
-   2. If prompted, click **Yes** to update the connection parameters.
-
-      See the [Connection interval](#factors-influencing-throughput) section to learn how the connection interval affects the throughput. Once the connection is established, LED1 will be ON.
-
-   3. Go to the **Device** tab and click **Discover all attributes**.
-
-   4. Click **Enable all notifications**.
-
-      The Tx GATT throughput values (in kbps) will be displayed on the UART terminal. LED2 will be ON while the device is sending notifications; it will be OFF intermittently indicating GATT packet congestion.
-
-   5. Click **Disable all notifications** to stop measuring the GATT throughput.
-
-   6. Click **Disconnect** to disconnect from the Central device.
 
 
-### Using CySmart iOS/Android app on smartphone as Bluetooth&reg; LE Central
+### Using LightBlue iOS/Android app on smartphone as Bluetooth&reg; LE Central
 
 1. Connect the board using the provided USB cable through the USB connector.
 
@@ -259,17 +233,13 @@ For a list of supported IDEs and more details, see the "Exporting to IDEs" secti
 
 3. Program the board with the "LE_Throughput ble-throughput-gatt-server" application.
 
-4. Turn ON Bluetooth&reg; on your android or iOS device and launch the CySmart app.
+4. Turn ON Bluetooth&reg; on your android or iOS device and launch the LightBlue app.
 
-5. Swipe down on the CySmart app home screen to start scanning for Bluetooth&reg; LE Peripherals; your device appears in the CySmart app home screen with the name `TPUT`. Select your device to establish a Bluetooth&reg; LE connection, see [Figure 6](#figure-6-CySmart-app). Once the connection is established, LED1 will be ON.
+5. Swipe down on the LightBlue app home screen to start scanning for Bluetooth&reg; LE Peripherals; your device appears in the LightBlue app home screen with the name `TPUT`. Select your device to establish a Bluetooth&reg; LE connection, see [Figure 6](#figure-6-LightBlue-app). Once the connection is established, LED1 will be ON.
 
-6. Select **GATT DB** from the carousel view, see [Figure 6](#figure-6-CySmart-app). Swipe left or right to change carousel selections.
 
-7. Select **Unknown service** and then select the characteristic with the **Notify** property.
 
-8. Select **Notify**, see [Figure 6](#figure-6-CySmart-app). The device will start sending GATT notifications to the mobile. LED2 will be ON while the device is sending notifications and will be OFF intermittently indicating GATT packet congestion.
-
-    **Figure 6. CySmart app**
+    **Figure 6. LightBlue app**
 
     ![](images/cysmart-app.png)
 
@@ -318,7 +288,7 @@ Some of the known factors that impact the data throughput are explained as follo
 
     In this code example, the Peripheral device requests a connection interval value of 26.25 ms, but the value you get will depend on the Central device that you use. The connection interval differs between iOS and Android. It also changes depending on the version of the OS running on the device. This is because the Bluetooth&reg; LE radio may have to attend to other events from the OS and the number of packets sent per connection event may not reach the maximum possible by the Bluetooth&reg; LE stack.
 
-    Note that the CySmart desktop application has an option to change the connection interval, but the CySmart mobile app does not support that option. See the "Configuring master settings" section on the [CySmart user guide](https://www.cypress.com/file/232316/download) for detailed instructions on connection parameters. Once a connection is established, the UART log will indicate the connection interval whenever it is changed.
+
 
 3. **ATT maximum transmission unit (MTU)**
 
@@ -326,7 +296,7 @@ Some of the known factors that impact the data throughput are explained as follo
 
     If the ATT MTU is exactly 247 bytes, 244 bytes of ATT data will fit into a single packet. If the MTU is greater than 247 bytes, the data is split into multiple packets causing the throughput to go down because of an increase in packet overhead and timing in between packets. Therefore, the GATT data size chosen in the application is 244 bytes.
 
-    **Note:** An MTU of 247 is exchanged when you are using the example with two kits. If you are using the GATT Server code example with Android/iOS app or the CySmart Windows application, MTU may change. The number of bytes to be sent is decided based on the MTU exchanged in the application.
+    **Note:** An MTU of 247 is exchanged when you are using the example with two kits. If you are using the GATT Server code example with Android/iOS app . The number of bytes to be sent is decided based on the MTU exchanged in the application.
 
 4. **Data length extension (DLE)**
 
@@ -442,9 +412,9 @@ File name           |Description
 This section explains the ModusToolbox&trade; software resources and their configuration as used in this code example. Note that all the configuration explained in this section has already been done in the code example. Eclipse IDE for ModusToolbox&trade; software stores the configuration settings of the application in the *design.modus* file. This file is used by the graphical configurators, which generate the configuration firmware. This firmware is stored in the application’s *GeneratedSource* folder.
 
 - **Device configurator:** Used to enable/configure the Peripherals and the pins used in the application. See the
-[Device configurator guide](https://www.cypress.com/ModusToolboxDeviceConfig).
+[Device configurator guide](https://www.infineon.com/dgdl/Infineon-ModusToolbox_Device_Configurator_Guide_4-UserManual-v01_00-EN.pdf?fileId=8ac78c8c7d718a49017d99ab297631cb).
 
-- **Bluetooth&reg; configurator:** Used for generating/modifying the Bluetooth&reg; LE GATT database. See the [Bluetooth&reg; configurator guide](https://www.cypress.com/ModusToolboxBLEConfig).
+- **Bluetooth&reg; configurator:** Used for generating/modifying the Bluetooth&reg; LE GATT database. See the [Bluetooth&reg; configurator guide](https://www.infineon.com/dgdl/Infineon-ModusToolbox_Bluetooth_Configurator_Guide_3-UserManual-v01_00-EN.pdf?fileId=8ac78c8c7d718a49017d99aaf5b231be).
 
 <br>
 
@@ -452,17 +422,17 @@ This section explains the ModusToolbox&trade; software resources and their confi
 
 Resources  | Links
 -----------|----------------------------------
-Application notes | [AN225684](https://www.cypress.com/an225684) –  Getting started with CYW208xx
-Code examples  | [Using ModusToolbox&trade; software](https://github.com/Infineon/Code-Examples-for-ModusToolbox-Software) on GitHub<br> [Using Bluetooth&reg; SDK](https://www.cypress.com/documentation/code-examples/bluetooth-sdk-code-examples)
-Device documentation | [CYW20819 device datasheet](https://www.cypress.com/datasheet/CYW20819) <br> [CYW20820 device datasheet](https://www.cypress.com/datasheet/CYW20820) <br> [CYW20719 device datasheet](https://www.cypress.com/documentation/datasheets/cyw20719-enhanced-low-power-bredrble-bluetooth-50-soc)|
-Development kits | Visit https://www.cypress.com/products/airoc-bluetooth-le-bluetooth
-Tools  | [Eclipse IDE for ModusToolbox&trade; software](https://www.cypress.com/modustoolbox) – ModusToolbox&trade; software is a collection of easy-to-use software and tools enabling rapid development with Infineon MCUs, covering applications from embedded sense and control to wireless and cloud-connected systems using AIROC&trade; Wi-Fi and Bluetooth® connectivity devices.
+Application notes | [AN225684](https://www.infineon.com/dgdl/Infineon-AN225684_Getting_Started_with_CYW20819-ApplicationNotes-v02_00-EN.PDF?fileId=8ac78c8c7cdc391c017d0d3674d1669d) –  Getting started with CYW208xx
+Code examples  | [Using ModusToolbox&trade; software](https://github.com/Infineon/Code-Examples-for-ModusToolbox-Software) on GitHub<br> [Using Bluetooth&reg; SDK](https://www.infineon.com/cms/en/design-support/software/code-examples/psoc-6-code-examples-for-modustoolbox/bluetooth-sdk-code-examples/)
+Device documentation | [CYW20819 device datasheet](https://www.infineon.com/dgdl/Infineon-CYW20819_Ultra_Low_Power_Bluetooth_LE_BR_EDR_Bluetooth_5.0_SoC-AdditionalTechnicalInformation-v07_00-EN.pdf?fileId=8ac78c8c7d0d8da4017d0ee7dba070bf) <br> [CYW20820 device datasheet](https://www.infineon.com/dgdl/Infineon-CYW20820_Ultra_Low_Power_Bluetooth_LE_BR_EDR_Bluetooth_5.0_SoC-AdditionalTechnicalInformation-v06_00-EN.pdf?fileId=8ac78c8c7d0d8da4017d0ee7e70770d1) <br> [CYW20719 device datasheet](https://www.infineon.com/dgdl/Infineon-CYW20719B2KUMLGT-DataSheet-v07_00-EN.pdf?fileId=8ac78c8c7d0d8da4017d0ee7edf470db)|
+Development kits | Visit https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-bluetooth-le-bluetooth-multiprotocol
+Tools  | [Eclipse IDE for ModusToolbox&trade; software](https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software/) – ModusToolbox&trade; software is a collection of easy-to-use software and tools enabling rapid development with Infineon MCUs, covering applications from embedded sense and control to wireless and cloud-connected systems using AIROC&trade; Wi-Fi and Bluetooth® connectivity devices.
 
 <br>
 
 ## Other resources
 
-Cypress provides a wealth of data at www.cypress.com to help you select the right device, and quickly and effectively integrate it into your design.
+Infineon provides a wealth of data at www.infineon.com to help you select the right device, and quickly and effectively integrate it into your design.
 
 ## Document history
 
@@ -474,6 +444,7 @@ Revision | Description of change
 1.1.0    | Updated to support ModusToolbox&trade; software v2.1
 2.0.0    | 1. The CE has been changed to support ModusToolbox&trade; software 2.2 or above  <br> 2. Added support for new kits <br> 3. Bug fix for unsuccessful CCCD writes
 2.1.0    | Added support for CYW920820M2EVB-01 
+2.2.0    | Added support for CYW920819M2EVB-01
 
 
 ---------------------------------------------------------
